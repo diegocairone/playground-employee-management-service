@@ -1,11 +1,10 @@
 package com.cairone.pg.services.employees.data.domain;
 
+import com.cairone.pg.services.employees.App;
+
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "banks")
@@ -13,6 +12,8 @@ public class BankEntity {
 
     @Id
     @Column(name = "bank_id")
+    @SequenceGenerator(name = "bank-seq-generator", sequenceName = "bank_seq", allocationSize = 10, initialValue = 20)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bank-seq-generator")
     private Long id;
     
     @Column(name = "name", nullable = false, length = 30, unique = true)

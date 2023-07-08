@@ -4,17 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.cairone.pg.services.employees.data.enums.EmployeeStatus;
 import com.cairone.pg.services.employees.data.enums.EmployeeTag;
@@ -25,6 +15,8 @@ public class EmployeeEntity {
     
     @Id
     @Column(name = "employee_id")
+    @SequenceGenerator(name = "employee-seq-generator", sequenceName = "employee_seq", allocationSize = 10)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee-seq-generator")
     private Long id;
 
     @Column(name = "names", nullable = false, length = 50)

@@ -4,21 +4,16 @@ import com.cairone.pg.services.employees.data.enums.BankAccountType;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "bank_accounts")
+@Table(name = "banks_accounts")
 public class BankAccountEntity {
 
     @Id
     @Column(name = "account_id")
+    @SequenceGenerator(name = "bank-account-seq-generator", sequenceName = "bank_account_seq", allocationSize = 10, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bank-account-seq-generator")
     private Long id;
     
     @Column(name = "account_number", nullable = false, unique = true, length = 10)

@@ -59,8 +59,6 @@ public class EmployeeService {
     @Transactional
     public EmployeeModel create(EmployeeForm form) {
 
-        final Long employeeId = employeeRepository.getMaxId().orElse(0L);
-
         final CityEntity cityEntity = cityRepository.findById(form.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Employee could not be created",
@@ -68,7 +66,6 @@ public class EmployeeService {
                         form.getCityId()));
 
         EmployeeEntity employeeEntity = new EmployeeEntity();
-        employeeEntity.setId(employeeId + 1L);
         employeeEntity.setNames(form.getNames().trim().toUpperCase());
         employeeEntity.setBirthDate(form.getBirthDate());
         employeeEntity.setCity(cityEntity);

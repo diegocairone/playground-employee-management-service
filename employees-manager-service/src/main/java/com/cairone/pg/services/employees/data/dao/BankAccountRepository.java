@@ -8,7 +8,4 @@ import org.springframework.data.jpa.repository.Query;
 import com.cairone.pg.services.employees.data.AppDataRepository;
 
 public interface BankAccountRepository extends AppDataRepository<BankAccountEntity, Long> {
-
-    @Query("SELECT max(c.id) FROM BankAccountEntity c")
-    public Optional<Long> getMaxId();
 }

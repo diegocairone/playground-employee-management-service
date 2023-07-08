@@ -2,10 +2,7 @@ package com.cairone.pg.services.employees.data.domain;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "cities")
@@ -13,6 +10,8 @@ public class CityEntity {
 
     @Id
     @Column(name = "city_id")
+    @SequenceGenerator(name = "city-seq-generator", sequenceName = "city_seq", allocationSize = 10, initialValue = 20)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "city-seq-generator")
     private Long id;
     
     @Column(nullable = false, unique = true)

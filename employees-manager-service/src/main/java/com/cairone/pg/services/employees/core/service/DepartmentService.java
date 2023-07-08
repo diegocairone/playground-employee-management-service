@@ -45,8 +45,6 @@ public class DepartmentService {
     @Transactional
     public DepartmentModel create(DepartmentForm form) {
 
-        final Long departmentId = departmentRepository.getMaxId().orElse(0L);
-
         final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Department could not be created",
@@ -62,8 +60,7 @@ public class DepartmentService {
                 .collect(Collectors.toSet());
 
         DepartmentEntity departmentEntity = new DepartmentEntity();
-        departmentEntity.setId(departmentId + 1);
-        departmentEntity.setName(form.getName());
+        departmentEntity.setName(form.getName().trim().toUpperCase());
         departmentEntity.setManager(manager);
         departmentEntity.setEmployees(employees);
 
