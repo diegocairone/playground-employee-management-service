@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "employee_status_log")
+@Table(name = "employees_status_log")
 public class EmployeeStatusLogEntity {
 
     @EmbeddedId

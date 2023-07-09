@@ -73,8 +73,7 @@ public class BankAccountService {
     
     @Transactional
     public BankAccountModel create(BankAccountForm form) {
-        
-        Long bankAccountId = bankAccountRepository.getMaxId().orElse(0L);
+
         BankEntity bankEntity = bankRepository.findById(form.getBankId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Requested resource could not be created",
@@ -82,7 +81,6 @@ public class BankAccountService {
         
         BankAccountEntity bankAccountEntity = new BankAccountEntity();
         
-        bankAccountEntity.setId(bankAccountId + 1L);
         bankAccountEntity.setAccountNumber(form.getAccountNumber().trim().toUpperCase());
         bankAccountEntity.setAccountType(form.getAccountType());
         bankAccountEntity.setBank(bankEntity);

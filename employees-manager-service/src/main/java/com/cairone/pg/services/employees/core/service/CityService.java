@@ -42,14 +42,9 @@ public class CityService {
         // check business rules
         verifyDuplicatedName(form.getName().trim().toUpperCase());
 
-        Long maxId = cityRepository.getMaxId().orElse(0L);
         CityEntity cityEntity = new CityEntity();
-        cityEntity.setId(maxId + 1);
         cityEntity.setName(form.getName().trim().toUpperCase());
-        CityEntity managed = cityRepository.save(cityEntity);
-        managed.setName("managed");
-        return cityMapper.convert(managed);
-        //return cityMapper.convert(cityRepository.save(cityEntity));
+        return cityMapper.convert(cityRepository.save(cityEntity));
     }
 
     @Transactional

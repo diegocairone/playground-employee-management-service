@@ -44,9 +44,7 @@ public class BankService {
         // check business rules
         verifyDuplicatedName(form.getName().trim().toUpperCase());
 
-        Long bankId = bankRepository.getMaxId().orElse(0L);
         BankEntity bankEntity = new BankEntity();
-        bankEntity.setId(bankId + 1L);
         bankEntity.setName(form.getName().trim().toUpperCase());
         return bankMapper.convert(bankRepository.save(bankEntity));
     }

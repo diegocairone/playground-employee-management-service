@@ -7,7 +7,4 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface CityRepository extends AppDataRepository<CityEntity, Long> {
-
-    @Query("SELECT max(c.id) FROM CityEntity c")
-    public Optional<Long> getMaxId();
 }

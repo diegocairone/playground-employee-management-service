@@ -10,6 +10,8 @@ public class DepartmentEntity {
 
     @Id
     @Column(name = "department_id")
+    @SequenceGenerator(name = "department-seq-generator", sequenceName = "department_seq", allocationSize = 10, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "department-seq-generator")
     private Long id;
     
     @Column(name = "name", nullable = false, length = 50)
