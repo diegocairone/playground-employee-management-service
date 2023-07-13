@@ -154,6 +154,58 @@ public class CityCtrlTest {
                         Matchers.equalTo("City with name BEIJING already exists")));
     }
 
+    @Test
+    public void whenCreate_givenNewCityWithAnEmptyName_thenHttpBadRequest() throws Exception {
+
+        CityRequest request = new CityRequest();
+        request.setName("");
+
+        CityMapper cityMapper = new CityMapper();
+        CityService cityService = new CityService(cityRepository, cityMapper);
+
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService), new AppControllerAdvice())
+                .build();
+
+        URI uri = UriComponentsBuilder.fromUri(baseUri)
+                .build()
+                .toUri();
+
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Matchers.equalTo("At least one field in the request is invalid")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
+                        Matchers.equalTo("must not be blank")));
+    }
+
+    @Test
+    public void whenCreate_givenNewCityWithAExtraLargeName_thenHttpBadRequest() throws Exception {
+
+        CityRequest request = new CityRequest();
+        request.setName("123456789012345678901234567890123456789012345678901");
+
+        CityMapper cityMapper = new CityMapper();
+        CityService cityService = new CityService(cityRepository, cityMapper);
+
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService), new AppControllerAdvice())
+                .build();
+
+        URI uri = UriComponentsBuilder.fromUri(baseUri)
+                .build()
+                .toUri();
+
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Matchers.equalTo("At least one field in the request is invalid")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
+                        Matchers.equalTo("size must be between 0 and 50")));
+    }
+
     private String asJsonString(Object object) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
