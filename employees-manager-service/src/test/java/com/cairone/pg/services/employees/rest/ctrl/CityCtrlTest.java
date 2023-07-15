@@ -206,6 +206,58 @@ public class CityCtrlTest {
                         Matchers.equalTo("size must be between 0 and 50")));
     }
 
+    @Test
+    public void whenDelete_givenCityById_thenCityEntityRemovedFromDatabase() throws Exception {
+
+        final CityEntity cityEntity = cityRepository.findById(15L).get();
+
+        CityMapper cityMapper = new CityMapper();
+        CityService cityService = new CityService(cityRepository, cityMapper);
+
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
+                .build();
+
+        URI uri = UriComponentsBuilder.fromUri(baseUri)
+                .path("/" + cityEntity.getId())
+                .build()
+                .toUri();
+
+        mvc.perform(MockMvcRequestBuilders.delete(uri))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        boolean exists = cityRepository.existsById(cityEntity.getId());
+        Assertions.assertThat(exists).isFalse();
+    }
+
+    @Test
+    public void whenUpdate_givenCityById_thenCityNameChangedInDatabase() throws Exception {
+
+        final CityEntity before = cityRepository.findById(15L).get();
+
+        CityMapper cityMapper = new CityMapper();
+        CityService cityService = new CityService(cityRepository, cityMapper);
+
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
+                .build();
+
+        CityRequest request = new CityRequest();
+        request.setName("CHANGED");
+
+        URI uri = UriComponentsBuilder.fromUri(baseUri)
+                .path("/" + before.getId())
+                .build()
+                .toUri();
+
+        mvc.perform(MockMvcRequestBuilders.put(uri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        final CityEntity after = cityRepository.findById(15L).get();
+
+        Assertions.assertThat(after.getName()).isEqualTo(request.getName());
+    }
+
     private String asJsonString(Object object) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
