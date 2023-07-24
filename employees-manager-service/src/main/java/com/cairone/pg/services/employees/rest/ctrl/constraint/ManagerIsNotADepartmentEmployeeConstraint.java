@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ManagerIsNotADepartmentEmployeeValidator.class)
 public @interface ManagerIsNotADepartmentEmployeeConstraint {
-    String message() default "Manager must not be a department employee";
+    String message() default "";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

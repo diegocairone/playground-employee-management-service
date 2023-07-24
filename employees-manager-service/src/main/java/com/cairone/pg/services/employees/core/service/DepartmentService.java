@@ -1,24 +1,26 @@
 package com.cairone.pg.services.employees.core.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.cairone.pg.services.employees.core.exception.EntityIntegrityException;
 import com.cairone.pg.services.employees.core.exception.EntityNotFoundException;
-import com.cairone.pg.services.employees.data.dao.DepartmentRepository;
-import com.cairone.pg.services.employees.data.dao.EmployeeRepository;
-import com.cairone.pg.services.employees.data.domain.DepartmentEntity;
-import com.cairone.pg.services.employees.data.domain.EmployeeEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.cairone.pg.services.employees.core.form.DepartmentForm;
 import com.cairone.pg.services.employees.core.mapper.DepartmentMapper;
 import com.cairone.pg.services.employees.core.mapper.DepartmentMapperCfg;
 import com.cairone.pg.services.employees.core.model.DepartmentModel;
-
+import com.cairone.pg.services.employees.data.dao.DepartmentRepository;
+import com.cairone.pg.services.employees.data.dao.EmployeeRepository;
+import com.cairone.pg.services.employees.data.domain.DepartmentEntity;
+import com.cairone.pg.services.employees.data.domain.EmployeeEntity;
+import com.cairone.pg.services.employees.data.domain.QDepartmentEntity;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +47,10 @@ public class DepartmentService {
     @Transactional
     public DepartmentModel create(DepartmentForm form) {
 
+        // check business rules
+        String name = form.getName().trim().toUpperCase();
+        verifyDuplicatedName(name, q -> q.name.eq(form.getName()));
+
         final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Department could not be created",
@@ -60,7 +66,7 @@ public class DepartmentService {
                 .collect(Collectors.toSet());
 
         DepartmentEntity departmentEntity = new DepartmentEntity();
-        departmentEntity.setName(form.getName().trim().toUpperCase());
+        departmentEntity.setName(name);
         departmentEntity.setManager(manager);
         departmentEntity.setEmployees(employees);
 
@@ -75,7 +81,11 @@ public class DepartmentService {
                         "Requested resource to be updated does not exist in the database",
                         "Department with ID %s could not be updated", id));
 
-        departmentEntity.setName(form.getName());
+        // check business rules
+        String name = form.getName().trim().toUpperCase();
+        verifyDuplicatedName(name, q -> q.name.eq(form.getName()).and(q.id.ne(id)));
+
+        departmentEntity.setName(name);
 
         if (!departmentEntity.getManager().getId().equals(form.getManagerId())) {
             final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
@@ -127,4 +137,16 @@ public class DepartmentService {
         departmentRepository.delete(departmentEntity);
     }
 
+    private void verifyDuplicatedName(String name, Function<QDepartmentEntity, BooleanExpression> predicate) {
+        Boolean existsByName = exists(predicate);
+        if (existsByName) {
+            throw new EntityIntegrityException("name", "Department with name %s already exists", name);
+        }
+    }
+
+    private Boolean exists(Function<QDepartmentEntity, BooleanExpression> predicate) {
+        QDepartmentEntity qDepartmentEntity = QDepartmentEntity.departmentEntity;
+        BooleanExpression booleanExpression = predicate.apply(qDepartmentEntity);
+        return departmentRepository.exists(booleanExpression);
+    }
 }

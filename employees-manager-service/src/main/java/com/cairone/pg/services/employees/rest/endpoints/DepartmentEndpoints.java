@@ -39,7 +39,7 @@ public interface DepartmentEndpoints {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PutMapping("{id}")
-    public ResponseEntity<DepartmentModel> update(Long id, @Valid @RequestBody DepartmentRequest request);
+    public ResponseEntity<DepartmentModel> update(@PathVariable("id") Long id, @Valid @RequestBody DepartmentRequest request);
 
     @Operation(summary = "Delete a department")
     @ApiResponses(value = {
@@ -47,5 +47,5 @@ public interface DepartmentEndpoints {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(Long id);
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id);
 }
