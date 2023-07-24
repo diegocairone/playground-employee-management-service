@@ -16,6 +16,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 @Transactional
 @ActiveProfiles("test")
-class BankCtrlTest {
+class BankCtrlTest extends AbstractCtrlTest {
 
     private URI baseUri;
     private BankRepository bankRepository;
@@ -106,17 +107,19 @@ class BankCtrlTest {
                 .build()
                 .toUri();
 
-        mvc.perform(post(uri)
+        MvcResult mvcResult = mvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("20"));
+                .andReturn();
+
+        Long createdId = findIdInResponse(mvcResult);
 
         BankEntity expected = new BankEntity();
-        expected.setId(20L);
+        expected.setId(createdId);
         expected.setName("TEST");
 
-        Optional<BankEntity> optional = bankRepository.findById(20L);
+        Optional<BankEntity> optional = bankRepository.findById(createdId);
         Assertions.assertThat(optional.get()).usingRecursiveComparison().isEqualTo(expected);
     }
 
@@ -224,12 +227,4 @@ class BankCtrlTest {
         Assertions.assertThat(after.getName()).isEqualTo(request.getName());
     }
 
-    private String asJsonString(Object object) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(object);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

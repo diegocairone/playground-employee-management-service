@@ -19,9 +19,11 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -29,8 +31,9 @@ import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@Transactional
 @ActiveProfiles("test")
-public class CityCtrlTest {
+public class CityCtrlTest extends AbstractCtrlTest {
 
     private URI baseUri;
 
@@ -50,7 +53,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenFindAll_givenPageZeroSize5_thenHttpOk() throws Exception {
+    void whenFindAll_givenPageZeroSize5_thenHttpOk() throws Exception {
 
         CityMapper cityMapper = new CityMapper();
         CityService cityService = new CityService(cityRepository, cityMapper);
@@ -78,7 +81,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenFindById_givenCityId_thenHttpOk() throws Exception {
+    void whenFindById_givenCityId_thenHttpOk() throws Exception {
 
         CityEntity expected = cityRepository.findById(1L).get();
         CityMapper cityMapper = new CityMapper();
@@ -99,7 +102,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenCreate_givenNewCity_thenHttpCreated() throws Exception {
+    void whenCreate_givenNewCity_thenHttpCreated() throws Exception {
 
         CityRequest request = new CityRequest();
         request.setName("test");
@@ -114,22 +117,24 @@ public class CityCtrlTest {
                 .build()
                 .toUri();
 
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("20"));
+                .andReturn();
+
+        Long createdId = findIdInResponse(mvcResult);
 
         CityEntity expected = new CityEntity();
-        expected.setId(20L);
+        expected.setId(createdId);
         expected.setName("TEST");
 
-        Optional<CityEntity> optional = cityRepository.findById(20L);
+        Optional<CityEntity> optional = cityRepository.findById(createdId);
         Assertions.assertThat(optional.get()).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
-    public void whenCreate_givenNewCityWithAnExistingName_thenHttpBadRequest() throws Exception {
+    void whenCreate_givenNewCityWithAnExistingName_thenHttpBadRequest() throws Exception {
 
         CityRequest request = new CityRequest();
         request.setName("BEIJING");
@@ -155,7 +160,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenCreate_givenNewCityWithAnEmptyName_thenHttpBadRequest() throws Exception {
+    void whenCreate_givenNewCityWithAnEmptyName_thenHttpBadRequest() throws Exception {
 
         CityRequest request = new CityRequest();
         request.setName("");
@@ -181,7 +186,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenCreate_givenNewCityWithAExtraLargeName_thenHttpBadRequest() throws Exception {
+    void whenCreate_givenNewCityWithAExtraLargeName_thenHttpBadRequest() throws Exception {
 
         CityRequest request = new CityRequest();
         request.setName("123456789012345678901234567890123456789012345678901");
@@ -207,7 +212,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenDelete_givenCityById_thenCityEntityRemovedFromDatabase() throws Exception {
+    void whenDelete_givenCityById_thenCityEntityRemovedFromDatabase() throws Exception {
 
         final CityEntity cityEntity = cityRepository.findById(15L).get();
 
@@ -230,7 +235,7 @@ public class CityCtrlTest {
     }
 
     @Test
-    public void whenUpdate_givenCityById_thenCityNameChangedInDatabase() throws Exception {
+    void whenUpdate_givenCityById_thenCityNameChangedInDatabase() throws Exception {
 
         final CityEntity before = cityRepository.findById(15L).get();
 
@@ -258,12 +263,4 @@ public class CityCtrlTest {
         Assertions.assertThat(after.getName()).isEqualTo(request.getName());
     }
 
-    private String asJsonString(Object object) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(object);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
