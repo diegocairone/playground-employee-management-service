@@ -6,7 +6,6 @@ import com.cairone.pg.services.employees.data.dao.CityRepository;
 import com.cairone.pg.services.employees.data.domain.CityEntity;
 import com.cairone.pg.services.employees.rest.ctrl.request.CityRequest;
 import com.cairone.pg.services.employees.rest.valid.AppControllerAdvice;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -23,11 +22,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -36,7 +35,6 @@ import java.util.Optional;
 public class CityCtrlTest extends AbstractCtrlTest {
 
     private URI baseUri;
-
     private CityRepository cityRepository;
 
     @Autowired
@@ -61,9 +59,7 @@ public class CityCtrlTest extends AbstractCtrlTest {
         PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
         pageableResolver.setFallbackPageable(PageRequest.of(0, 10));
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
-                .setCustomArgumentResolvers(pageableResolver)
-                .build();
+        MockMvc mvc = standaloneSetup().setCustomArgumentResolvers(pageableResolver).build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .queryParam("page", 0)
@@ -83,12 +79,11 @@ public class CityCtrlTest extends AbstractCtrlTest {
     @Test
     void whenFindById_givenCityId_thenHttpOk() throws Exception {
 
-        CityEntity expected = cityRepository.findById(1L).get();
+        CityEntity expected = cityRepository.getById(1L);
         CityMapper cityMapper = new CityMapper();
         CityService cityService = new CityService(cityRepository, cityMapper);
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/" + expected.getId())
@@ -107,17 +102,9 @@ public class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("test");
 
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
+        MockMvc mvc = standaloneSetup().build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -129,8 +116,8 @@ public class CityCtrlTest extends AbstractCtrlTest {
         expected.setId(createdId);
         expected.setName("TEST");
 
-        Optional<CityEntity> optional = cityRepository.findById(createdId);
-        Assertions.assertThat(optional.get()).usingRecursiveComparison().isEqualTo(expected);
+        CityEntity actual = cityRepository.getById(createdId);
+        Assertions.assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -139,17 +126,9 @@ public class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("BEIJING");
 
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -165,17 +144,9 @@ public class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("");
 
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -191,17 +162,9 @@ public class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("123456789012345678901234567890123456789012345678901");
 
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -214,13 +177,9 @@ public class CityCtrlTest extends AbstractCtrlTest {
     @Test
     void whenDelete_givenCityById_thenCityEntityRemovedFromDatabase() throws Exception {
 
-        final CityEntity cityEntity = cityRepository.findById(15L).get();
+        final CityEntity cityEntity = cityRepository.getById(15L);
 
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/" + cityEntity.getId())
@@ -237,13 +196,9 @@ public class CityCtrlTest extends AbstractCtrlTest {
     @Test
     void whenUpdate_givenCityById_thenCityNameChangedInDatabase() throws Exception {
 
-        final CityEntity before = cityRepository.findById(15L).get();
+        final CityEntity before = cityRepository.getById(15L);
 
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CityCtrl(cityService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         CityRequest request = new CityRequest();
         request.setName("CHANGED");
@@ -258,9 +213,14 @@ public class CityCtrlTest extends AbstractCtrlTest {
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        final CityEntity after = cityRepository.findById(15L).get();
+        final CityEntity after = cityRepository.getById(15L);
 
         Assertions.assertThat(after.getName()).isEqualTo(request.getName());
     }
 
+    private StandaloneMockMvcBuilder standaloneSetup() {
+        CityMapper cityMapper = new CityMapper();
+        CityService cityService = new CityService(cityRepository, cityMapper);
+        return MockMvcBuilders.standaloneSetup(new CityCtrl(cityService));
+    }
 }

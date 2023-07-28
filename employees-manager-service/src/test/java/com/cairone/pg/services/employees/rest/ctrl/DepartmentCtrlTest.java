@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -70,15 +71,7 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
     @Test
     void whenFindAll_thenAllDepartmentsAndHttpOk() throws Exception {
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
-
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new DepartmentCtrl(departmentService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         mvc.perform(get(baseUri))
                 .andExpect(status().isOk())
@@ -88,17 +81,9 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
     @Test
     void whenFindById_givenDepartmentId_thenHttpOk() throws Exception {
 
-        DepartmentEntity expected = departmentRepository.findById(1L).get();
+        DepartmentEntity expected = departmentRepository.getById(1L);
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
-
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new DepartmentCtrl(departmentService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/" + expected.getId())
@@ -119,21 +104,9 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
+        MockMvc mvc = standaloneSetup().build();
 
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new DepartmentCtrl(departmentService))
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        MvcResult mvcResult = mvc.perform(post(uri)
+        MvcResult mvcResult = mvc.perform(post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -145,8 +118,7 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         expected.setId(createdId);
         expected.setName("TEST");
 
-        Optional<DepartmentEntity> optional = departmentRepository.findById(createdId);
-        DepartmentEntity actual = optional.get();
+        DepartmentEntity actual = departmentRepository.getById(createdId);
         Assertions.assertThat(actual).usingRecursiveComparison()
                 .ignoringExpectedNullFields()
                 .isEqualTo(expected);
@@ -167,22 +139,9 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                new DepartmentCtrl(departmentService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -200,22 +159,9 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                        new DepartmentCtrl(departmentService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -233,22 +179,9 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                        new DepartmentCtrl(departmentService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -266,22 +199,9 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(1L, 2L).stream().collect(Collectors.toSet()));
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                        new DepartmentCtrl(departmentService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -305,16 +225,7 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
 
         final DepartmentEntity actual = departmentRepository.save(departmentEntity);
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
-
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                        new DepartmentCtrl(departmentService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/" + actual.getId())
@@ -333,16 +244,7 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
 
         final DepartmentEntity before = departmentRepository.getById(1L);
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
-
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                        new DepartmentCtrl(departmentService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         DepartmentRequest request = new DepartmentRequest();
         request.setName("CHANGED");
@@ -370,16 +272,7 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
 
         final DepartmentEntity before = departmentRepository.getById(1L);
 
-        CityMapper cityMapper = new CityMapper();
-        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
-        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
-
-        DepartmentService departmentService = new DepartmentService(
-                departmentRepository, employeeRepository, departmentMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
-                        new DepartmentCtrl(departmentService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         DepartmentRequest request = new DepartmentRequest();
         request.setName("DEPARTMENT-1");
@@ -404,4 +297,14 @@ public class DepartmentCtrlTest extends AbstractCtrlTest {
         Assertions.assertThat(after.getEmployees().stream().map(EmployeeEntity::getId)).contains(3l, 4l);
     }
 
+    private StandaloneMockMvcBuilder standaloneSetup() {
+        CityMapper cityMapper = new CityMapper();
+        EmployeeMapper employeeMapper = new EmployeeMapper(cityMapper);
+        DepartmentMapper departmentMapper = new DepartmentMapper(employeeMapper);
+
+        DepartmentService departmentService = new DepartmentService(
+                departmentRepository, employeeRepository, departmentMapper);
+
+        return MockMvcBuilders.standaloneSetup(new DepartmentCtrl(departmentService));
+    }
 }

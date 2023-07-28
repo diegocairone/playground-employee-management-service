@@ -6,7 +6,6 @@ import com.cairone.pg.services.employees.data.dao.BankRepository;
 import com.cairone.pg.services.employees.data.domain.BankEntity;
 import com.cairone.pg.services.employees.rest.ctrl.request.BankRequest;
 import com.cairone.pg.services.employees.rest.valid.AppControllerAdvice;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +18,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,11 +54,7 @@ class BankCtrlTest extends AbstractCtrlTest {
     @Test
     void whenFindAll_thenAllBanksAndHttpOk() throws Exception {
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         mvc.perform(get(baseUri))
                 .andExpect(status().isOk())
@@ -72,13 +64,9 @@ class BankCtrlTest extends AbstractCtrlTest {
     @Test
     void whenFindById_givenBankId_thenHttpOk() throws Exception {
 
-        BankEntity expected = bankRepository.findById(1L).get();
+        BankEntity expected = bankRepository.getById(1L);
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/" + expected.getId())
@@ -97,17 +85,9 @@ class BankCtrlTest extends AbstractCtrlTest {
         BankRequest request = new BankRequest();
         request.setName("test");
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
+        MockMvc mvc = standaloneSetup().build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService))
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        MvcResult mvcResult = mvc.perform(post(uri)
+        MvcResult mvcResult = mvc.perform(post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -119,8 +99,8 @@ class BankCtrlTest extends AbstractCtrlTest {
         expected.setId(createdId);
         expected.setName("TEST");
 
-        Optional<BankEntity> optional = bankRepository.findById(createdId);
-        Assertions.assertThat(optional.get()).usingRecursiveComparison().isEqualTo(expected);
+        BankEntity actual = bankRepository.getById(createdId);
+        Assertions.assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -129,17 +109,9 @@ class BankCtrlTest extends AbstractCtrlTest {
         BankRequest request = new BankRequest();
         request.setName("");
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(post(uri)
+        mvc.perform(post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -148,23 +120,16 @@ class BankCtrlTest extends AbstractCtrlTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
                         equalTo("must not be blank")));
     }
+
     @Test
-    public void whenCreate_givenNewBankWithAnExtraLargeName_thenHttpBadRequest() throws Exception {
+    void whenCreate_givenNewBankWithAnExtraLargeName_thenHttpBadRequest() throws Exception {
 
         BankRequest request = new BankRequest();
         request.setName("1234567890123456789012345678901");
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService), new AppControllerAdvice())
-                .build();
-
-        URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .build()
-                .toUri();
-
-        mvc.perform(post(uri)
+        mvc.perform(post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -173,18 +138,15 @@ class BankCtrlTest extends AbstractCtrlTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
                         equalTo("size must be between 0 and 30")));
     }
+
     @Test
-    public void whenDelete_givenBankById_thenBankEntityRemovedFromDatabase() throws Exception {
+    void whenDelete_givenBankById_thenBankEntityRemovedFromDatabase() throws Exception {
 
         BankEntity bankEntity = new BankEntity();
         bankEntity.setName("Test Bank");
         bankRepository.save(bankEntity);
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/" + bankEntity.getId())
@@ -199,15 +161,11 @@ class BankCtrlTest extends AbstractCtrlTest {
     }
 
     @Test
-    public void whenUpdate_givenBankById_thenBankNameChangedInDatabase() throws Exception {
+    void whenUpdate_givenBankById_thenBankNameChangedInDatabase() throws Exception {
 
-        final BankEntity before = bankRepository.findById(1L).get();
+        final BankEntity before = bankRepository.getById(1L);
 
-        BankMapper bankMapper = new BankMapper();
-        BankService bankService = new BankService(bankRepository, bankMapper);
-
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new BankCtrl(bankService))
-                .build();
+        MockMvc mvc = standaloneSetup().build();
 
         BankRequest request = new BankRequest();
         request.setName("CHANGED");
@@ -222,9 +180,14 @@ class BankCtrlTest extends AbstractCtrlTest {
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        final BankEntity after = bankRepository.findById(1L).get();
+        final BankEntity after = bankRepository.getById(1L);
 
         Assertions.assertThat(after.getName()).isEqualTo(request.getName());
     }
 
+    private StandaloneMockMvcBuilder standaloneSetup() {
+        BankMapper bankMapper = new BankMapper();
+        BankService bankService = new BankService(bankRepository, bankMapper);
+        return MockMvcBuilders.standaloneSetup(new BankCtrl(bankService));
+    }
 }
