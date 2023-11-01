@@ -1,6 +1,6 @@
 package com.cairone.pg.services.employees.rest.ctrl.constraint;
 
-import com.cairone.pg.services.employees.rest.ctrl.validator.ManagerIsNotADepartmentEmployeeValidator;
+import com.cairone.pg.services.employees.rest.ctrl.validator.BankAccountNumberForTypeValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,9 +11,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ManagerIsNotADepartmentEmployeeValidator.class)
-public @interface ManagerIsNotADepartmentEmployeeConstraint {
-    String message() default "";
+@Constraint(validatedBy = BankAccountNumberForTypeValidator.class)
+public @interface BankAccountNumberForTypeConstraint {
+
+    String message() default "Provided account number is invalid for this account type";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

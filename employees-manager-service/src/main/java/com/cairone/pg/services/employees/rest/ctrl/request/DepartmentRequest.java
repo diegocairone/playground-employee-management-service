@@ -14,7 +14,7 @@ import java.util.Set;
 public class DepartmentRequest implements DepartmentForm {
 
     @NotBlank
-    @Size(min = 1, max = 50)
+    @Size(max = 50)
     private String name;
 
     @NotNull

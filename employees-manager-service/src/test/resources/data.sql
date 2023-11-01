@@ -22,9 +22,10 @@ INSERT INTO banks (bank_id, name) VALUES
 ;
 
 INSERT INTO banks_accounts (account_id, account_number, account_type, bank_id) VALUES
-(1, 'AA00000001', 1, 1),
-(2, 'AA00000002', 1, 1),
-(3, 'AC00000003', 0, 2)
+(1, 'SS00000001', 1, 1),
+(2, 'SS00000002', 1, 1),
+(3, 'OO00000003', 0, 2),
+(4, 'OO00000004', 0, 2)
 ;
 
 INSERT INTO employees

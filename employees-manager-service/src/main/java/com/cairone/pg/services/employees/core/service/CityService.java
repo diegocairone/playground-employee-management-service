@@ -40,7 +40,8 @@ public class CityService {
     public CityModel create(CityForm form) {
 
         // check business rules
-        verifyDuplicatedName(form.getName().trim().toUpperCase());
+        String name = form.getName().trim().toUpperCase();
+        verifyDuplicatedName(name, q -> q.name.eq(name));
 
         CityEntity cityEntity = new CityEntity();
         cityEntity.setName(form.getName().trim().toUpperCase());
@@ -56,7 +57,8 @@ public class CityService {
                         "City with ID %s could not be updated", id));
 
         // check business rules
-        verifyDuplicatedName(form.getName().trim().toUpperCase());
+        String name = form.getName().trim().toUpperCase();
+        verifyDuplicatedName(name, q -> q.name.eq(name).and(q.id.ne(id)));
 
         cityEntity.setName(form.getName().trim().toUpperCase());
         return cityMapper.convert(cityRepository.save(cityEntity));
@@ -71,8 +73,8 @@ public class CityService {
         cityRepository.delete(cityEntity);
     }
 
-    private void verifyDuplicatedName(String name) {
-        Boolean existsByName = exists(q -> q.name.eq(name));
+    private void verifyDuplicatedName(String name, Function<QCityEntity, BooleanExpression> predicate) {
+        Boolean existsByName = exists(predicate);
         if (existsByName) {
             throw new EntityIntegrityException("name", "City with name %s already exists", name);
         }

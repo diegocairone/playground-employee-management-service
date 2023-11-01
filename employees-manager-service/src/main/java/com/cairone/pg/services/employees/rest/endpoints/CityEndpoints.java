@@ -40,7 +40,7 @@ public interface CityEndpoints {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PutMapping("{id}")
-    public ResponseEntity<CityModel> update(Long id, @Valid @RequestBody CityRequest request);
+    public ResponseEntity<CityModel> update(@PathVariable Long id, @Valid @RequestBody CityRequest request);
 
     @Operation(summary = "Delete a city")
     @ApiResponses(value = {
@@ -48,5 +48,5 @@ public interface CityEndpoints {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(Long id);
+    public ResponseEntity<Void> delete(@PathVariable Long id);
 }

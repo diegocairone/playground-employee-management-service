@@ -42,7 +42,8 @@ public class BankService {
     public BankModel create(BankForm form) {
 
         // check business rules
-        verifyDuplicatedName(form.getName().trim().toUpperCase());
+        String name = form.getName().trim().toUpperCase();
+        verifyDuplicatedName(name, q -> q.name.eq(name));
 
         BankEntity bankEntity = new BankEntity();
         bankEntity.setName(form.getName().trim().toUpperCase());
@@ -58,7 +59,8 @@ public class BankService {
                         "Bank with ID %s could not be updated", id));
 
         // check business rules
-        verifyDuplicatedName(form.getName().trim().toUpperCase());
+        String name = form.getName().trim().toUpperCase();
+        verifyDuplicatedName(name, q -> q.name.eq(name).and(q.id.ne(id)));
 
         bankEntity.setName(form.getName().trim().toUpperCase());
         return bankMapper.convert(bankRepository.save(bankEntity));
@@ -73,8 +75,8 @@ public class BankService {
         bankRepository.delete(bankEntity);
     }
 
-    private void verifyDuplicatedName(String name) {
-        Boolean existsByName = exists(q -> q.name.eq(name));
+    private void verifyDuplicatedName(String name, Function<QBankEntity, BooleanExpression> predicate) {
+        Boolean existsByName = exists(predicate);
         if (existsByName) {
             throw new EntityIntegrityException("name", "Bank with name %s already exists", name);
         }

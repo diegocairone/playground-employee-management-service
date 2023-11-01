@@ -1,27 +1,28 @@
 package com.cairone.pg.services.employees.core.service;
 
-import java.util.Optional;
-
+import com.cairone.pg.services.employees.core.exception.EntityIntegrityException;
 import com.cairone.pg.services.employees.core.exception.EntityNotFoundException;
+import com.cairone.pg.services.employees.core.form.BankAccountForm;
+import com.cairone.pg.services.employees.core.mapper.BankAccountFilter;
+import com.cairone.pg.services.employees.core.mapper.BankAccountMapper;
+import com.cairone.pg.services.employees.core.mapper.BankAccountMapperCfg;
+import com.cairone.pg.services.employees.core.model.BankAccountModel;
 import com.cairone.pg.services.employees.data.dao.BankAccountRepository;
 import com.cairone.pg.services.employees.data.dao.BankRepository;
 import com.cairone.pg.services.employees.data.dao.EmployeeRepository;
 import com.cairone.pg.services.employees.data.domain.BankAccountEntity;
 import com.cairone.pg.services.employees.data.domain.BankEntity;
 import com.cairone.pg.services.employees.data.domain.QBankAccountEntity;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cairone.pg.services.employees.core.form.BankAccountForm;
-import com.cairone.pg.services.employees.core.mapper.BankAccountFilter;
-import com.cairone.pg.services.employees.core.mapper.BankAccountMapper;
-import com.cairone.pg.services.employees.core.mapper.BankAccountMapperCfg;
-import com.cairone.pg.services.employees.core.model.BankAccountModel;
-import com.querydsl.core.BooleanBuilder;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -78,7 +79,11 @@ public class BankAccountService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Requested resource could not be created",
                         "Bank with ID %s does not exist in our database", form.getBankId()));
-        
+
+        // check business rules
+        String accountNumber = form.getAccountNumber().trim().toUpperCase();
+        verifyDuplicatedName(accountNumber, q -> q.accountNumber.eq(accountNumber));
+
         BankAccountEntity bankAccountEntity = new BankAccountEntity();
         
         bankAccountEntity.setAccountNumber(form.getAccountNumber().trim().toUpperCase());
@@ -94,6 +99,10 @@ public class BankAccountService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Requested resource to be updated does not exist in the database",
                         "Bank account with ID %s could not be updated", id));
+
+        // check business rules
+        String accountNumber = form.getAccountNumber().trim().toUpperCase();
+        verifyDuplicatedName(accountNumber, q -> q.accountNumber.eq(accountNumber).and(q.id.ne(id)));
 
         bankAccountEntity.setAccountNumber(form.getAccountNumber().trim().toUpperCase());
         bankAccountEntity.setAccountType(form.getAccountType());
@@ -119,5 +128,18 @@ public class BankAccountService {
                         "Bank account with ID %s could not be deleted", id));
 
         bankAccountRepository.delete(bankAccountEntity);
+    }
+
+    private void verifyDuplicatedName(String bankAccountNumber, Function<QBankAccountEntity, BooleanExpression> predicate) {
+        Boolean existsByName = exists(predicate);
+        if (existsByName) {
+            throw new EntityIntegrityException("name", "Bank account number %s already exists", bankAccountNumber);
+        }
+    }
+
+    private Boolean exists(Function<QBankAccountEntity, BooleanExpression> predicate) {
+        QBankAccountEntity qBankAccountEntity = QBankAccountEntity.bankAccountEntity;
+        BooleanExpression booleanExpression = predicate.apply(qBankAccountEntity);
+        return bankAccountRepository.exists(booleanExpression);
     }
 }

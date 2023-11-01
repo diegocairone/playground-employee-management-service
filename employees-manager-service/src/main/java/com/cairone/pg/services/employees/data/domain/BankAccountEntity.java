@@ -12,7 +12,7 @@ public class BankAccountEntity {
 
     @Id
     @Column(name = "account_id")
-    @SequenceGenerator(name = "bank-account-seq-generator", sequenceName = "bank_account_seq", allocationSize = 10, initialValue = 1)
+    @SequenceGenerator(name = "bank-account-seq-generator", sequenceName = "bank_account_seq", allocationSize = 10, initialValue = 10)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bank-account-seq-generator")
     private Long id;
     

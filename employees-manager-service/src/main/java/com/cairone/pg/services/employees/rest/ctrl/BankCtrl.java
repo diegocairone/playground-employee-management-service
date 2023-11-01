@@ -45,13 +45,13 @@ public class BankCtrl implements BankEndpoints {
     }
 
     @Override
-    public ResponseEntity<BankModel> update(Long id, BankRequest request) {
+    public ResponseEntity<BankModel> update(@PathVariable Long id, BankRequest request) {
         BankModel bankModel = bankService.update(id, request);
         return ResponseEntity.ok(bankModel);
     }
 
     @Override
-    public ResponseEntity<Void> delete(Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         bankService.delete(id);
         return ResponseEntity.noContent().build();
     }

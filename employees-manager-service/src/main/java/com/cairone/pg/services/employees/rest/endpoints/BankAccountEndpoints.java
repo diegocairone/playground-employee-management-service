@@ -44,7 +44,7 @@ public interface BankAccountEndpoints {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PutMapping("{id}")
-    public ResponseEntity<BankAccountModel> update(Long id, @Valid @RequestBody BankAccountRequest request);
+    public ResponseEntity<BankAccountModel> update(@PathVariable Long id, @Valid @RequestBody BankAccountRequest request);
 
     @Operation(summary = "Delete a bank account")
     @ApiResponses(value = {
@@ -52,5 +52,5 @@ public interface BankAccountEndpoints {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(Long id);
+    public ResponseEntity<Void> delete(@PathVariable Long id);
 }
