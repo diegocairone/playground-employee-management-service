@@ -1,4 +1,4 @@
-package com.cairone.pg.data.enums;
+package com.cairone.pg.base.enums;
 
 public enum EmployeeTag {
     BACKEND_DEV(1),

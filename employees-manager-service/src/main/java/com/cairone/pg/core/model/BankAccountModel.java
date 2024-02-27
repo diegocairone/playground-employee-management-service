@@ -1,6 +1,6 @@
 package com.cairone.pg.core.model;
 
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;

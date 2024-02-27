@@ -1,6 +1,6 @@
 package com.cairone.pg.core.form;
 
-import com.cairone.pg.data.enums.EmployeeTag;
+import com.cairone.pg.base.enums.EmployeeTag;
 
 import java.time.LocalDate;
 import java.util.Set;

@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.cairone.pg.data.domain.DepartmentEntity;
 import com.cairone.pg.data.domain.EmployeeEntity;
-import com.cairone.pg.data.enums.EmployeeTag;
+import com.cairone.pg.base.enums.EmployeeTag;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -6,8 +6,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import com.cairone.pg.data.enums.EmployeeStatus;
-import com.cairone.pg.data.enums.EmployeeTag;
+import com.cairone.pg.base.enums.EmployeeStatus;
+import com.cairone.pg.base.enums.EmployeeTag;
 
 @Entity
 @Table(name = "employees")
