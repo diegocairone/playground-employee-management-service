@@ -4,10 +4,11 @@ public class EntityNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    private String reason;
+    private final String reason;
 
     public EntityNotFoundException() {
         super();
+        this.reason = null;
     }
 
     public EntityNotFoundException(String reason, String format, Object... vars) {

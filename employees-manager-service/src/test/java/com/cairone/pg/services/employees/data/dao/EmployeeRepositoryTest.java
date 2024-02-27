@@ -19,19 +19,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class EmployeeRepositoryTest {
+class EmployeeRepositoryTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
     
     @Test
-    public void givenEmployeeId_whenFindById_thenOk() {
+    void givenEmployeeId_whenFindById_thenOk() {
         Optional<EmployeeEntity> employee = employeeRepository.findById(1L);
         assertThat(employee).isNotEmpty();
     }
     
     @Test
-    public void givenEmployee_thenAssertHasDepartments() {
+    void givenEmployee_thenAssertHasDepartments() {
         
         Optional<EmployeeEntity> employeeOptional = employeeRepository.findById(2L);
         assertThat(employeeOptional).isNotEmpty();
@@ -42,7 +42,7 @@ public class EmployeeRepositoryTest {
     }
     
     @Test
-    public void givenEmployee_thenAssertHasTags() {
+    void givenEmployee_thenAssertHasTags() {
         
         Optional<EmployeeEntity> employeeOptional = employeeRepository.findById(2L);
         assertThat(employeeOptional).isNotEmpty();

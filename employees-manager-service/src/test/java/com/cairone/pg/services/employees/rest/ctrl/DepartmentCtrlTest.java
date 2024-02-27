@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 @Transactional
 @ActiveProfiles("test")
-public class DepartmentCtrlTest extends AbstractCtrlTest {
+class DepartmentCtrlTest extends AbstractCtrlTest {
 
     private URI baseUri;
     private DepartmentRepository departmentRepository;

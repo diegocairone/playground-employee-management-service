@@ -5,9 +5,12 @@ import com.cairone.pg.services.employees.core.exception.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.Objects;
 
 @ControllerAdvice
 public class AppControllerAdvice {
@@ -44,7 +47,10 @@ public class AppControllerAdvice {
         BindingResult result = ex.getBindingResult();
 
         if (result.hasGlobalErrors()) {
-            builder.withReason(result.getGlobalError().getDefaultMessage());
+            ObjectError objectError = Objects.requireNonNullElse(
+                    result.getGlobalError(),
+                    new ObjectError("global", "Unknown error"));
+            builder.withReason(objectError.getDefaultMessage());
         }
 
         AppErrorResponse appErrorResponse = builder.build();

@@ -17,10 +17,11 @@ public class AppErrorResponse {
     private final String reason;
 
     public void addError(String field, String errorMessage) {
-        if (!fieldErrors.containsKey(field)) {
-            fieldErrors.put(field, new ArrayList<>());
-        }
-        fieldErrors.get(field).add(errorMessage);
+        fieldErrors.computeIfAbsent(field, k -> new ArrayList<>());
+        fieldErrors.computeIfPresent(field, (k, v) -> {
+            v.add(errorMessage);
+            return v;
+        });
     }
 
     public Map<String, List<String>> getFieldErrors() {

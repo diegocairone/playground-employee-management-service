@@ -138,7 +138,7 @@ public class DepartmentService {
     }
 
     private void verifyDuplicatedName(String name, Function<QDepartmentEntity, BooleanExpression> predicate) {
-        Boolean existsByName = exists(predicate);
+        boolean existsByName = exists(predicate);
         if (existsByName) {
             throw new EntityIntegrityException("name", "Department with name %s already exists", name);
         }

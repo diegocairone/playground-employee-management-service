@@ -19,7 +19,7 @@ public class BankAccountNumberForTypeValidator implements ConstraintValidator<Ba
         } else if (accountNumber.startsWith("CC") && !accountType.equals(BankAccountType.CHECKING)) {
             addConstraintViolation(context, "Account number for CHECKING account is invalid");
             return false;
-        } if (accountNumber.startsWith("OO") && !accountType.equals(BankAccountType.OTHER)) {
+        } else if (accountNumber.startsWith("OO") && !accountType.equals(BankAccountType.OTHER)) {
             addConstraintViolation(context, "Account number for OTHER account is invalid");
             return false;
         }

@@ -22,7 +22,7 @@ public enum BankAccountType {
             case 2:
                 return CHECKING;
             default:
-                throw new RuntimeException();
+                throw new RuntimeException("Unknown value: " + dbValue);
         }
     }
 }

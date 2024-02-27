@@ -17,13 +17,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class DepartmentRepositoryTest {
+class DepartmentRepositoryTest {
 
     @Autowired
     private DepartmentRepository departmentRepository;
     
     @Test
-    public void givenDepartment_thenAssertHasEmployees() {
+    void givenDepartment_thenAssertHasEmployees() {
         
         Optional<DepartmentEntity> departmentOptional = departmentRepository.findById(1L);
         assertThat(departmentOptional).isNotEmpty();

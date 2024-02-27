@@ -1,10 +1,7 @@
 package com.cairone.pg.services.employees.data.domain;
 
-import com.cairone.pg.services.employees.App;
-
-import java.util.Objects;
-
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "banks")
@@ -18,9 +15,6 @@ public class BankEntity {
     
     @Column(name = "name", nullable = false, length = 30, unique = true)
     private String name;
-    
-    public BankEntity() {
-    }
 
     public Long getId() {
         return id;

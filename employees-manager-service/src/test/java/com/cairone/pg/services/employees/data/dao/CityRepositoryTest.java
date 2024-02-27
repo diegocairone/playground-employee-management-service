@@ -16,19 +16,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class CityRepositoryTest {
+class CityRepositoryTest {
 
     @Autowired
     private CityRepository cityRepository;
     
     @Test
-    public void whenFetchingAll_thenListIsNotEmpty() {
+    void whenFetchingAll_thenListIsNotEmpty() {
         List<CityEntity> cityEntities = cityRepository.findAll();
         assertThat(cityEntities).isNotEmpty();
     }
     
     @Test
-    public void givenCityId_whenFindById_thenOk() {
+    void givenCityId_whenFindById_thenOk() {
         Optional<CityEntity> cityEntity = cityRepository.findById(1L);
         assertThat(cityEntity).isNotEmpty();
     }

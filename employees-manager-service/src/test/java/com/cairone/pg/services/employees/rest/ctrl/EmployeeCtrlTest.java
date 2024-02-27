@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 @Transactional
 @ActiveProfiles("test")
-public class EmployeeCtrlTest extends AbstractCtrlTest {
+class EmployeeCtrlTest extends AbstractCtrlTest {
 
     private URI baseUri;
     private EmployeeRepository employeeRepository;

@@ -131,7 +131,7 @@ public class BankAccountService {
     }
 
     private void verifyDuplicatedName(String bankAccountNumber, Function<QBankAccountEntity, BooleanExpression> predicate) {
-        Boolean existsByName = exists(predicate);
+        boolean existsByName = exists(predicate);
         if (existsByName) {
             throw new EntityIntegrityException("name", "Bank account number %s already exists", bankAccountNumber);
         }

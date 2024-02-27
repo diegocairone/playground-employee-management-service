@@ -4,10 +4,11 @@ public class EntityIntegrityException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    private String field;
+    private final String field;
 
     public EntityIntegrityException() {
         super();
+        this.field = null;
     }
 
     public EntityIntegrityException(String field, String format, Object... vars) {

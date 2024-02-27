@@ -30,7 +30,7 @@ public enum EmployeeTag {
         case 5:
             return REACT_DEV;
         default:
-            throw new RuntimeException();
+            throw new RuntimeException("Unknown dbValue: " + dbValue);
         }
     }
 }

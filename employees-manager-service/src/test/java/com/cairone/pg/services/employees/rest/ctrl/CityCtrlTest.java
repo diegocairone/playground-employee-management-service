@@ -32,7 +32,7 @@ import java.net.URI;
 @AutoConfigureTestDatabase
 @Transactional
 @ActiveProfiles("test")
-public class CityCtrlTest extends AbstractCtrlTest {
+class CityCtrlTest extends AbstractCtrlTest {
 
     private URI baseUri;
     private CityRepository cityRepository;
@@ -52,9 +52,6 @@ public class CityCtrlTest extends AbstractCtrlTest {
 
     @Test
     void whenFindAll_givenPageZeroSize5_thenHttpOk() throws Exception {
-
-        CityMapper cityMapper = new CityMapper();
-        CityService cityService = new CityService(cityRepository, cityMapper);
 
         PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
         pageableResolver.setFallbackPageable(PageRequest.of(0, 10));

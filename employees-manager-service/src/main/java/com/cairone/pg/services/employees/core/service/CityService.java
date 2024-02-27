@@ -74,7 +74,7 @@ public class CityService {
     }
 
     private void verifyDuplicatedName(String name, Function<QCityEntity, BooleanExpression> predicate) {
-        Boolean existsByName = exists(predicate);
+        boolean existsByName = exists(predicate);
         if (existsByName) {
             throw new EntityIntegrityException("name", "City with name %s already exists", name);
         }

@@ -27,9 +27,6 @@ public class DepartmentEntity {
             joinColumns = @JoinColumn(name = "department_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id"))
     private Set<EmployeeEntity> employees;
-    
-    public DepartmentEntity() {
-    }
 
     public Long getId() {
         return id;

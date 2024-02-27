@@ -16,13 +16,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class BankAccountRepositoryTest {
+class BankAccountRepositoryTest {
 
     @Autowired
     private BankAccountRepository bankAccountRepository;
     
     @Test
-    public void test() {
+    void test() {
         
         Optional<BankAccountEntity> bankAccountOptional = bankAccountRepository.findById(1L);
         assertThat(bankAccountOptional).isNotEmpty();

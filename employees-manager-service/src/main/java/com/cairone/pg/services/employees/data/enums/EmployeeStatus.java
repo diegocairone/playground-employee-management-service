@@ -25,7 +25,7 @@ public enum EmployeeStatus {
         case 3:
             return SUSPENDED;
         default:
-            throw new RuntimeException();
+            throw new RuntimeException("Unknown dbValue: " + dbValue);
         }
     }
 }

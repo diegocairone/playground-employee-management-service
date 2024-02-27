@@ -28,9 +28,6 @@ public class BankAccountEntity {
 
     @OneToOne(optional = true, mappedBy = "bankAccount")
     private EmployeeEntity employee;
-    
-    public BankAccountEntity() {
-    }
 
     public Long getId() {
         return id;
