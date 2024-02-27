@@ -1,5 +1,6 @@
 package com.cairone.pg.core.exception;
 
+@Deprecated
 public class EntityIntegrityException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

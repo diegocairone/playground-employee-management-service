@@ -1,4 +1,4 @@
-package com.cairone.pg.data.enums;
+package com.cairone.pg.base.enums;
 
 public enum BankAccountType {
     SAVINGS(1), CHECKING(2), OTHER(0);

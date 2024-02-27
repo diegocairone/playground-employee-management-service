@@ -1,6 +1,6 @@
 package com.cairone.pg.rest.ctrl.request;
 
-import com.cairone.pg.data.enums.EmployeeStatus;
+import com.cairone.pg.base.enums.EmployeeStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

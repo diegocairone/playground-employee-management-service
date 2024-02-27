@@ -1,6 +1,6 @@
 package com.cairone.pg.data.converter;
 
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

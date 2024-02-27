@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.cairone.pg.core.form.BankAccountForm;
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 
 import com.cairone.pg.rest.ctrl.constraint.BankAccountNumberForTypeConstraint;
 import lombok.Data;

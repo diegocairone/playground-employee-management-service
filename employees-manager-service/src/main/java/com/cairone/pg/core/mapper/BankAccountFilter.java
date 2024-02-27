@@ -2,7 +2,7 @@ package com.cairone.pg.core.mapper;
 
 import java.util.Set;
 
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 
 import lombok.Builder;
 import lombok.Value;

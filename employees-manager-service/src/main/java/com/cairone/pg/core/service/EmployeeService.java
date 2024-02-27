@@ -9,7 +9,7 @@ import com.cairone.pg.core.model.EmployeeModel;
 import com.cairone.pg.core.pageable.EmployeePageableConverter;
 import com.cairone.pg.data.dao.*;
 import com.cairone.pg.data.domain.*;
-import com.cairone.pg.data.enums.EmployeeStatus;
+import com.cairone.pg.base.enums.EmployeeStatus;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,7 @@
 package com.cairone.pg.data.domain;
 
 import com.cairone.pg.data.domain.id.EmployeeStatusLogPkEntity;
-import com.cairone.pg.data.enums.EmployeeStatus;
+import com.cairone.pg.base.enums.EmployeeStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

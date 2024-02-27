@@ -1,7 +1,7 @@
 package com.cairone.pg.rest.ctrl.request;
 
 import com.cairone.pg.core.form.EmployeeForm;
-import com.cairone.pg.data.enums.EmployeeTag;
+import com.cairone.pg.base.enums.EmployeeTag;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;

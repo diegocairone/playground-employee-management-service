@@ -1,6 +1,6 @@
 package com.cairone.pg.rest.ctrl.validator;
 
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 import com.cairone.pg.rest.ctrl.constraint.BankAccountNumberForTypeConstraint;
 import com.cairone.pg.rest.ctrl.request.BankAccountRequest;
 

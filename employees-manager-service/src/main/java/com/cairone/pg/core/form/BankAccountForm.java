@@ -1,6 +1,6 @@
 package com.cairone.pg.core.form;
 
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 
 public interface BankAccountForm {
 

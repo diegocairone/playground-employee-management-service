@@ -9,7 +9,7 @@ import com.cairone.pg.data.dao.BankRepository;
 import com.cairone.pg.data.dao.EmployeeRepository;
 import com.cairone.pg.data.domain.BankAccountEntity;
 import com.cairone.pg.data.domain.BankEntity;
-import com.cairone.pg.data.enums.BankAccountType;
+import com.cairone.pg.base.enums.BankAccountType;
 import com.cairone.pg.rest.valid.AppControllerAdvice;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
