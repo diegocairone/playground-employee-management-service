@@ -1,4 +1,4 @@
-package com.cairone.pg.rest.valid;
+package com.cairone.pg.base.vo;
 
 import lombok.Builder;
 import lombok.Value;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-public class AppErrorResponse {
+public class ErrorValue {
 
     private final Map<String, List<String>> fieldErrors = new HashMap<>();
     private final String message;

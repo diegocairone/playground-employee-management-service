@@ -16,10 +16,16 @@ INSERT INTO cities (city_id, name) VALUES
 (15, 'LIMA')
 ;
 
+ALTER SEQUENCE city_seq RESTART WITH 20;
+
+
 INSERT INTO banks (bank_id, name) VALUES
 (1, 'BANK 1'),
 (2, 'BANK 2')
 ;
+
+ALTER SEQUENCE bank_seq RESTART WITH 10;
+
 
 INSERT INTO banks_accounts (account_id, account_number, account_type, bank_id) VALUES
 (1, 'SS00000001', 1, 1),
@@ -27,6 +33,9 @@ INSERT INTO banks_accounts (account_id, account_number, account_type, bank_id) V
 (3, 'OO00000003', 0, 2),
 (4, 'OO00000004', 0, 2)
 ;
+
+ALTER SEQUENCE bank_account_seq RESTART WITH 10;
+
 
 INSERT INTO employees
 (employee_id, names, birthdate, city_id, status, bank_account_id)
@@ -41,12 +50,18 @@ VALUES
 (8, 'MAGGIE SIMPSON', '2000-02-03', 3, 1, null)
 ;
 
+ALTER SEQUENCE employee_seq RESTART WITH 10;
+
+
 INSERT INTO departments
 (department_id, name, manager_id)
 VALUES
 (1, 'DEPARTMENT-1', 1),
 (2, 'DEPARTMENT-2', 1)
 ;
+
+ALTER SEQUENCE department_seq RESTART WITH 10;
+
 
 INSERT INTO departments_employees
 (department_id, employee_id)

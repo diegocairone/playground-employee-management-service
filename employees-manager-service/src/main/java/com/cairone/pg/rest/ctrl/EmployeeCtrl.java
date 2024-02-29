@@ -1,22 +1,21 @@
 package com.cairone.pg.rest.ctrl;
 
-import com.cairone.pg.core.service.BankAccountService;
-import com.cairone.pg.rest.endpoints.EmployeeEndpoints;
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.mapper.EmployeeFilter;
 import com.cairone.pg.core.mapper.EmployeeMapperCfg;
 import com.cairone.pg.core.model.BankAccountModel;
 import com.cairone.pg.core.model.EmployeeModel;
+import com.cairone.pg.core.service.BankAccountService;
 import com.cairone.pg.core.service.EmployeeService;
 import com.cairone.pg.rest.ctrl.request.EmployeeRequest;
 import com.cairone.pg.rest.ctrl.request.EmployeeStatusRequest;
-import com.cairone.pg.rest.exception.ResourceNotFoundException;
+import com.cairone.pg.rest.endpoints.EmployeeEndpoints;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -28,15 +27,16 @@ public class EmployeeCtrl implements EmployeeEndpoints {
     private final EmployeeService employeeService;
     private final BankAccountService bankAccountService;
 
-
     @Override
     public ResponseEntity<EmployeeModel> findById(
             @PathVariable Long id,
             EmployeeMapperCfg mapperCfg) {
         
         EmployeeModel employee = employeeService.findById(id, mapperCfg)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Resource with ID %s was not found", id));
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
+                        "Employee with ID %s was not found", id));
         
         return ResponseEntity.ok(employee);
     }
@@ -51,8 +51,10 @@ public class EmployeeCtrl implements EmployeeEndpoints {
     public ResponseEntity<BankAccountModel> findBankAccountByEmployeeId(Long id) {
         return bankAccountService.findBankAccountByEmployeeId(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Resource with ID %s was not found", id));
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
+                        "Employee with ID %s was not found", id));
     }
 
     @Override

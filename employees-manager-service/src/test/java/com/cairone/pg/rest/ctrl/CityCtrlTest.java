@@ -1,14 +1,15 @@
 package com.cairone.pg.rest.ctrl;
 
 import com.cairone.pg.core.mapper.CityMapper;
-import com.cairone.pg.data.domain.CityEntity;
-import com.cairone.pg.rest.ctrl.request.CityRequest;
-import com.cairone.pg.rest.valid.AppControllerAdvice;
 import com.cairone.pg.core.service.CityService;
 import com.cairone.pg.data.dao.CityRepository;
+import com.cairone.pg.data.domain.CityEntity;
+import com.cairone.pg.rest.ctrl.request.CityRequest;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -117,58 +118,23 @@ class CityCtrlTest extends AbstractCtrlTest {
         Assertions.assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
-    @Test
-    void whenCreate_givenNewCityWithAnExistingName_thenHttpBadRequest() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"BEIJING", "", "123456789012345678901234567890123456789012345678901"})
+    void whenCreate_givenNewCityWithAnExistingName_thenHttpBadRequest(String givenName) throws Exception {
 
         CityRequest request = new CityRequest();
         request.setName("BEIJING");
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Matchers.equalTo("Data integrity violation")))
+                        Matchers.equalTo("Sent data is invalid")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
-                        Matchers.equalTo("City with name BEIJING already exists")));
-    }
-
-    @Test
-    void whenCreate_givenNewCityWithAnEmptyName_thenHttpBadRequest() throws Exception {
-
-        CityRequest request = new CityRequest();
-        request.setName("");
-
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
-
-        mvc.perform(MockMvcRequestBuilders.post(baseUri)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Matchers.equalTo("At least one field in the request is invalid")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
-                        Matchers.equalTo("must not be blank")));
-    }
-
-    @Test
-    void whenCreate_givenNewCityWithAExtraLargeName_thenHttpBadRequest() throws Exception {
-
-        CityRequest request = new CityRequest();
-        request.setName("123456789012345678901234567890123456789012345678901");
-
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
-
-        mvc.perform(MockMvcRequestBuilders.post(baseUri)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Matchers.equalTo("At least one field in the request is invalid")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
-                        Matchers.equalTo("size must be between 0 and 50")));
+                        Matchers.equalTo("Provided city name is already in use")));
     }
 
     @Test

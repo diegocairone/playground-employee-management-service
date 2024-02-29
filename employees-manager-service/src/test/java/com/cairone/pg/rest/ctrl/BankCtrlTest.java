@@ -5,7 +5,6 @@ import com.cairone.pg.core.service.BankService;
 import com.cairone.pg.data.dao.BankRepository;
 import com.cairone.pg.data.domain.BankEntity;
 import com.cairone.pg.rest.ctrl.request.BankRequest;
-import com.cairone.pg.rest.valid.AppControllerAdvice;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +108,7 @@ class BankCtrlTest extends AbstractCtrlTest {
         BankRequest request = new BankRequest();
         request.setName("");
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,7 +126,7 @@ class BankCtrlTest extends AbstractCtrlTest {
         BankRequest request = new BankRequest();
         request.setName("1234567890123456789012345678901");
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)

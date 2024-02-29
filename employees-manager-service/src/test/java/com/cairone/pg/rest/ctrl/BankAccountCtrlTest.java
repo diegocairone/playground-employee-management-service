@@ -10,7 +10,6 @@ import com.cairone.pg.data.dao.EmployeeRepository;
 import com.cairone.pg.data.domain.BankAccountEntity;
 import com.cairone.pg.data.domain.BankEntity;
 import com.cairone.pg.base.enums.BankAccountType;
-import com.cairone.pg.rest.valid.AppControllerAdvice;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -145,7 +144,7 @@ class BankAccountCtrlTest extends AbstractCtrlTest {
         request.setAccountNumber("CC00000001");
 
         MockMvc mvc = standaloneSetup()
-                .setControllerAdvice(new AppControllerAdvice())
+                .setControllerAdvice(new AppAdviceCtrl())
                 .build();
 
         mvc.perform(post(baseUri)
@@ -167,7 +166,7 @@ class BankAccountCtrlTest extends AbstractCtrlTest {
         request.setAccountNumber("SS00000001");
 
         MockMvc mvc = standaloneSetup()
-                .setControllerAdvice(new AppControllerAdvice())
+                .setControllerAdvice(new AppAdviceCtrl())
                 .build();
 
         mvc.perform(post(baseUri)
@@ -175,9 +174,9 @@ class BankAccountCtrlTest extends AbstractCtrlTest {
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(jsonPath("$.message",
-                        Matchers.is("Data integrity violation")))
+                        Matchers.is("Sent data is invalid")))
                 .andExpect(jsonPath("$.reason",
-                        Matchers.is("Exception thrown when an attempt to insert or update data results in violation of a business rule")));
+                        Matchers.is("Bank account number SS00000001 already exists")));
     }
     @Test
     void whenDelete_givenBankAccountById_thenBankAccountEntityRemovedFromDatabase() throws Exception {
@@ -185,11 +184,12 @@ class BankAccountCtrlTest extends AbstractCtrlTest {
         BankEntity bankEntity = bankRepository.getById(1l);
 
         BankAccountEntity bankAccountEntity = new BankAccountEntity();
+        bankAccountEntity.setId(999L);
         bankAccountEntity.setBank(bankEntity);
         bankAccountEntity.setAccountNumber("SS99999999");
         bankAccountEntity.setAccountType(BankAccountType.SAVINGS);
 
-        BankAccountEntity expected = bankAccountRepository.save(bankAccountEntity);
+        BankAccountEntity expected = bankAccountRepository.saveAndFlush(bankAccountEntity);
 
         MockMvc mvc = standaloneSetup().build();
 

@@ -1,5 +1,7 @@
 package com.cairone.pg.base.enums;
 
+import com.cairone.pg.base.exception.AppClientException;
+
 public enum EmployeeStatus {
     ACTIVE(1),
     INACTIVE(2),
@@ -25,7 +27,10 @@ public enum EmployeeStatus {
         case 3:
             return SUSPENDED;
         default:
-            throw new RuntimeException("Unknown dbValue: " + dbValue);
+            throw new AppClientException(
+                    AppClientException.DATA_INTEGRITY,
+                    errors -> errors.put("status", "Invalid employee status type: " + dbValue),
+                    "Invalid employee status type: " + dbValue);
         }
     }
 }

@@ -1,11 +1,11 @@
 package com.cairone.pg.rest.ctrl;
 
-import com.cairone.pg.rest.endpoints.DepartmentEndpoints;
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.mapper.DepartmentMapperCfg;
 import com.cairone.pg.core.model.DepartmentModel;
 import com.cairone.pg.core.service.DepartmentService;
 import com.cairone.pg.rest.ctrl.request.DepartmentRequest;
-import com.cairone.pg.rest.exception.ResourceNotFoundException;
+import com.cairone.pg.rest.endpoints.DepartmentEndpoints;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +27,9 @@ public class DepartmentCtrl implements DepartmentEndpoints {
         
         return departmentService.findById(id, departmentMapperCfg)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Resource with ID %s was not found", id));
     }
 

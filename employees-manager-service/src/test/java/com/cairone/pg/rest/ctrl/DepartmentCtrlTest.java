@@ -9,7 +9,6 @@ import com.cairone.pg.data.dao.EmployeeRepository;
 import com.cairone.pg.data.domain.DepartmentEntity;
 import com.cairone.pg.data.domain.EmployeeEntity;
 import com.cairone.pg.rest.ctrl.request.DepartmentRequest;
-import com.cairone.pg.rest.valid.AppControllerAdvice;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -138,16 +137,16 @@ class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Matchers.equalTo("Data integrity violation")))
+                        Matchers.equalTo("Sent data is invalid")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
-                        Matchers.equalTo("Department with name DEPARTMENT-1 already exists")));
+                        Matchers.equalTo("Provided department name is already in use")));
     }
 
     @Test
@@ -158,7 +157,7 @@ class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -178,7 +177,7 @@ class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(2L, 3L).stream().collect(Collectors.toSet()));
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -198,7 +197,7 @@ class DepartmentCtrlTest extends AbstractCtrlTest {
         request.setManagerId(1L);
         request.setEmployeeIDs(Arrays.asList(1L, 2L).stream().collect(Collectors.toSet()));
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)

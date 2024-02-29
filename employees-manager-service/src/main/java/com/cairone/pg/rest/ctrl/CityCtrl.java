@@ -1,10 +1,10 @@
 package com.cairone.pg.rest.ctrl;
 
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.model.CityModel;
+import com.cairone.pg.core.service.CityService;
 import com.cairone.pg.rest.ctrl.request.CityRequest;
 import com.cairone.pg.rest.endpoints.CityEndpoints;
-import com.cairone.pg.core.service.CityService;
-import com.cairone.pg.rest.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +26,10 @@ public class CityCtrl implements CityEndpoints {
         
         return cityService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Resource with ID %s was not found", id));
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
+                        "City with ID %s was not found", id));
     }
 
     @Override

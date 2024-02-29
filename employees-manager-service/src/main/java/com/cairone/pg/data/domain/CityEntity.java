@@ -10,7 +10,7 @@ public class CityEntity {
 
     @Id
     @Column(name = "city_id")
-    @SequenceGenerator(name = "city-seq-generator", sequenceName = "city_seq", allocationSize = 10, initialValue = 20)
+    @SequenceGenerator(name = "city-seq-generator", sequenceName = "city_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "city-seq-generator")
     private Long id;
     
