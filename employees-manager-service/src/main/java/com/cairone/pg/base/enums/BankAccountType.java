@@ -1,5 +1,7 @@
 package com.cairone.pg.base.enums;
 
+import com.cairone.pg.base.exception.AppClientException;
+
 public enum BankAccountType {
     SAVINGS(1), CHECKING(2), OTHER(0);
 
@@ -22,7 +24,10 @@ public enum BankAccountType {
             case 2:
                 return CHECKING;
             default:
-                throw new RuntimeException("Unknown value: " + dbValue);
+                throw new AppClientException(
+                        AppClientException.DATA_INTEGRITY,
+                        errors -> errors.put("accountType", "Invalid bank account type: " + dbValue),
+                        "Invalid bank account type: " + dbValue);
         }
     }
 }

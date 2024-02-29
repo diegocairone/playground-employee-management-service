@@ -1,5 +1,7 @@
 package com.cairone.pg.base.enums;
 
+import com.cairone.pg.base.exception.AppClientException;
+
 public enum EmployeeTag {
     BACKEND_DEV(1),
     FRONTEND_DEV(2),
@@ -39,7 +41,10 @@ public enum EmployeeTag {
         case 8:
             return SCRUM_MASTER;
         default:
-            throw new RuntimeException("Unknown dbValue: " + dbValue);
+            throw new AppClientException(
+                    AppClientException.DATA_INTEGRITY,
+                    errors -> errors.put("status", "Invalid employee tag code: " + dbValue),
+                    "Unknown employee tag code: " + dbValue);
         }
     }
 }

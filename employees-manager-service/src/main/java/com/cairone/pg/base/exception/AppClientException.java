@@ -3,7 +3,6 @@ package com.cairone.pg.base.exception;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class AppClientException extends RuntimeException {
 

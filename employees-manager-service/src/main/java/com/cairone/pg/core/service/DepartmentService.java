@@ -51,19 +51,11 @@ public class DepartmentService {
         verifyDuplicatedName(name, q -> q.name.eq(form.getName()));
 
         final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
-                .orElseThrow(() -> new AppClientException(
-                        AppClientException.NOT_FOUND,
-                        error -> error.put("employeeId", "Invalid Manager ID provided"),
-                        "Assigned manager with ID %s could not be found in the database",
-                        form.getManagerId()));
+                .orElseThrow(() -> getManagerNotFoundException(form.getManagerId()));
 
         final Set<EmployeeEntity> employees = form.getEmployeeIDs().stream()
                 .map(employeeId -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new AppClientException(
-                                AppClientException.NOT_FOUND,
-                                error -> error.put("employeeId", "Invalid Employee ID provided"),
-                                "Assigned employee with ID %s could not be found in the database",
-                                employeeId)))
+                        .orElseThrow(() -> getEmployeeNotFoundException(employeeId)))
                 .collect(Collectors.toSet());
 
         DepartmentEntity departmentEntity = new DepartmentEntity();
@@ -91,11 +83,7 @@ public class DepartmentService {
 
         if (!departmentEntity.getManager().getId().equals(form.getManagerId())) {
             final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
-                    .orElseThrow(() -> new AppClientException(
-                            AppClientException.NOT_FOUND,
-                            error -> error.put("employeeId", "Invalid Manager ID provided"),
-                            "Assigned manager with ID %s could not be found in the database",
-                            form.getManagerId()));
+                    .orElseThrow(() -> getManagerNotFoundException(form.getManagerId()));
             departmentEntity.setManager(manager);
         }
 
@@ -110,21 +98,13 @@ public class DepartmentService {
         final Set<EmployeeEntity> toBeAdded = form.getEmployeeIDs().stream()
                 .filter(e -> !intersection.contains(e))
                 .map(employeeId -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new AppClientException(
-                                AppClientException.NOT_FOUND,
-                                error -> error.put("employeeId", "Invalid Employee ID provided"),
-                                "Assigned employee with ID %s could not be found in the database",
-                                employeeId)))
+                        .orElseThrow(() -> getEmployeeNotFoundException(employeeId)))
                 .collect(Collectors.toSet());
 
         final Set<EmployeeEntity> toBeRemoved = actualEmployeeIds.stream()
                 .filter(e -> !intersection.contains(e))
                 .map(employeeId -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new AppClientException(
-                                AppClientException.NOT_FOUND,
-                                error -> error.put("employeeId", "Invalid Employee ID provided"),
-                                "Assigned employee with ID %s could not be found in the database",
-                                employeeId)))
+                        .orElseThrow(() -> getEmployeeNotFoundException(employeeId)))
                 .collect(Collectors.toSet());
 
         departmentEntity.getEmployees().addAll(toBeAdded);
@@ -156,5 +136,21 @@ public class DepartmentService {
         QDepartmentEntity qDepartmentEntity = QDepartmentEntity.departmentEntity;
         BooleanExpression booleanExpression = predicate.apply(qDepartmentEntity);
         return departmentRepository.exists(booleanExpression);
+    }
+
+    private AppClientException getManagerNotFoundException(Long managerId) {
+        return new AppClientException(
+                AppClientException.NOT_FOUND,
+                error -> error.put("managerId", "Invalid Manager ID provided"),
+                "Manager with ID %s could not be found in the database",
+                managerId);
+    }
+
+    private AppClientException getEmployeeNotFoundException(Long employeeId) {
+        return new AppClientException(
+                AppClientException.NOT_FOUND,
+                error -> error.put("employeeId", "Invalid Employee ID provided"),
+                "Employee with ID %s could not be found in the database",
+                employeeId);
     }
 }

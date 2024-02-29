@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -52,6 +53,7 @@ public class EmployeeService {
         }
 
         Pageable dataPageable = employeePageableConverter.convert(viewPageable);
+        Assert.notNull(dataPageable, "Data pageable cannot be null");
 
         return employeeRepository.findAll(builder, dataPageable)
                 .map(entity -> employeeMapper.convert(entity, mapperCfg));
@@ -91,11 +93,7 @@ public class EmployeeService {
     public EmployeeModel update(Long id, EmployeeForm form) {
 
         final EmployeeEntity employeeEntity = employeeRepository.findById(id).orElseThrow(
-                () -> new AppClientException(
-                        AppClientException.NOT_FOUND,
-                        error -> error.put("id", "Invalid ID provided"),
-                        "Employee with ID %s could not be found in the database",
-                        id));
+                () -> getEmployeeNotFoundException(id));
 
         if (!employeeEntity.getCity().getId().equals(form.getCityId())) {
 
@@ -131,20 +129,14 @@ public class EmployeeService {
     @Transactional
     public void delete(Long id) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
-                .orElseThrow(() -> new AppClientException(
-                        AppClientException.NOT_FOUND,
-                        error -> error.put("id", "Invalid ID provided"),
-                        "Employee with ID %s could not be deleted", id));
+                .orElseThrow(() -> getEmployeeNotFoundException(id));
         employeeRepository.delete(employeeEntity);
     }
 
     @Transactional
     public void updateStatus(Long employeeId, EmployeeStatus newStatus) {
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new AppClientException(
-                        AppClientException.NOT_FOUND,
-                        error -> error.put("id", "Invalid ID provided"),
-                        "Employee with ID %s could not be deleted", employeeId));
+                .orElseThrow(() -> getEmployeeNotFoundException(employeeId));
         EmployeeStatus currentStatus = employeeEntity.getStatus();
         if (!currentStatus.equals(newStatus)) {
             Long nextLogId = employeeStatusLogRepository.getMaxId(employeeEntity).orElse(0L) + 1L;
@@ -154,5 +146,12 @@ public class EmployeeService {
             statusLogEntity.setStatus(newStatus);
             employeeStatusLogRepository.save(statusLogEntity);
         }
+    }
+
+    private AppClientException getEmployeeNotFoundException(Long id) {
+        return new AppClientException(
+                AppClientException.NOT_FOUND,
+                error -> error.put("id", "Invalid ID provided"),
+                "Employee with ID %s could not be found in the database", id);
     }
 }
