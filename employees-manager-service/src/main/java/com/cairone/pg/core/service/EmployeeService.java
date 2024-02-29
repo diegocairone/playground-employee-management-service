@@ -1,15 +1,18 @@
 package com.cairone.pg.core.service;
 
-import com.cairone.pg.core.exception.EntityNotFoundException;
+import com.cairone.pg.base.enums.EmployeeStatus;
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.form.EmployeeForm;
 import com.cairone.pg.core.mapper.EmployeeFilter;
 import com.cairone.pg.core.mapper.EmployeeMapper;
 import com.cairone.pg.core.mapper.EmployeeMapperCfg;
 import com.cairone.pg.core.model.EmployeeModel;
 import com.cairone.pg.core.pageable.EmployeePageableConverter;
-import com.cairone.pg.data.dao.*;
+import com.cairone.pg.data.dao.BankAccountRepository;
+import com.cairone.pg.data.dao.CityRepository;
+import com.cairone.pg.data.dao.EmployeeRepository;
+import com.cairone.pg.data.dao.EmployeeStatusLogRepository;
 import com.cairone.pg.data.domain.*;
-import com.cairone.pg.base.enums.EmployeeStatus;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +32,6 @@ public class EmployeeService {
     private final EmployeeStatusLogRepository employeeStatusLogRepository;
     private final CityRepository cityRepository;
     private final BankAccountRepository bankAccountRepository;
-    private final DepartmentRepository departmentRepository;
     private final EmployeeMapper employeeMapper;
     private final EmployeePageableConverter employeePageableConverter;
 
@@ -59,8 +61,9 @@ public class EmployeeService {
     public EmployeeModel create(EmployeeForm form) {
 
         final CityEntity cityEntity = cityRepository.findById(form.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Employee could not be created",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("cityId", "Invalid City ID provided"),
                         "City with ID %s could not be found in the database",
                         form.getCityId()));
 
@@ -73,8 +76,9 @@ public class EmployeeService {
 
         if (form.getBankAccountId() != null) {
             BankAccountEntity bankAccountEntity = bankAccountRepository.findById(form.getBankAccountId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Employee could not be created",
+                    .orElseThrow(() -> new AppClientException(
+                            AppClientException.NOT_FOUND,
+                            error -> error.put("bankAccountId", "Invalid Bank Account ID provided"),
                             "Bank Account with ID %s could not be found in the database",
                             form.getBankAccountId()));
             employeeEntity.setBankAccount(bankAccountEntity);
@@ -87,16 +91,18 @@ public class EmployeeService {
     public EmployeeModel update(Long id, EmployeeForm form) {
 
         final EmployeeEntity employeeEntity = employeeRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(
-                        "Employee could not be updated",
+                () -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Employee with ID %s could not be found in the database",
                         id));
 
         if (!employeeEntity.getCity().getId().equals(form.getCityId())) {
 
             final CityEntity cityEntity = cityRepository.findById(form.getCityId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Employee could not be updated",
+                    .orElseThrow(() -> new AppClientException(
+                            AppClientException.NOT_FOUND,
+                            error -> error.put("cityId", "Invalid City ID provided"),
                             "City with ID %s could not be found in the database",
                             form.getCityId()));
 
@@ -107,8 +113,9 @@ public class EmployeeService {
             employeeEntity.setBankAccount(null);
         } else if (!employeeEntity.getBankAccount().getId().equals(form.getBankAccountId())) {
             final BankAccountEntity bankAccountEntity = bankAccountRepository.findById(form.getBankAccountId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Employee could not be updated",
+                    .orElseThrow(() -> new AppClientException(
+                            AppClientException.NOT_FOUND,
+                            error -> error.put("bankAccountId", "Invalid Bank Account ID provided"),
                             "Bank Account with ID %s could not be found in the database",
                             form.getBankAccountId()));
             employeeEntity.setBankAccount(bankAccountEntity);
@@ -124,8 +131,9 @@ public class EmployeeService {
     @Transactional
     public void delete(Long id) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be deleted does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Employee with ID %s could not be deleted", id));
         employeeRepository.delete(employeeEntity);
     }
@@ -133,8 +141,9 @@ public class EmployeeService {
     @Transactional
     public void updateStatus(Long employeeId, EmployeeStatus newStatus) {
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Employee status could not be updated",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Employee with ID %s could not be deleted", employeeId));
         EmployeeStatus currentStatus = employeeEntity.getStatus();
         if (!currentStatus.equals(newStatus)) {

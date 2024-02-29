@@ -1,13 +1,12 @@
 package com.cairone.pg.core.service;
 
-import com.cairone.pg.core.exception.EntityIntegrityException;
-import com.cairone.pg.core.exception.EntityNotFoundException;
+import com.cairone.pg.base.exception.AppClientException;
+import com.cairone.pg.core.form.CityForm;
 import com.cairone.pg.core.mapper.CityMapper;
 import com.cairone.pg.core.model.CityModel;
 import com.cairone.pg.data.dao.CityRepository;
 import com.cairone.pg.data.domain.CityEntity;
 import com.cairone.pg.data.domain.QCityEntity;
-import com.cairone.pg.core.form.CityForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,8 +51,9 @@ public class CityService {
     public CityModel update(Long id, CityForm form) {
 
         CityEntity cityEntity = cityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be updated does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "City with ID %s could not be updated", id));
 
         // check business rules
@@ -67,8 +67,9 @@ public class CityService {
     @Transactional
     public void delete(Long id) {
         CityEntity cityEntity = cityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be deleted does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "City with ID %s could not be deleted", id));
         cityRepository.delete(cityEntity);
     }
@@ -76,7 +77,10 @@ public class CityService {
     private void verifyDuplicatedName(String name, Function<QCityEntity, BooleanExpression> predicate) {
         boolean existsByName = exists(predicate);
         if (existsByName) {
-            throw new EntityIntegrityException("name", "City with name %s already exists", name);
+            throw new AppClientException(
+                    AppClientException.DATA_INTEGRITY,
+                    error -> error.put("name", "Provided city name is already in use"),
+                    "City with name %s already exists", name);
         }
     }
 

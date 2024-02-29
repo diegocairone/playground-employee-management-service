@@ -3,7 +3,6 @@ package com.cairone.pg.rest.ctrl;
 import com.cairone.pg.core.mapper.CityMapper;
 import com.cairone.pg.data.domain.CityEntity;
 import com.cairone.pg.rest.ctrl.request.CityRequest;
-import com.cairone.pg.rest.valid.AppControllerAdvice;
 import com.cairone.pg.core.service.CityService;
 import com.cairone.pg.data.dao.CityRepository;
 import org.assertj.core.api.Assertions;
@@ -123,16 +122,16 @@ class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("BEIJING");
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Matchers.equalTo("Data integrity violation")))
+                        Matchers.equalTo("Sent data is invalid")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fieldErrors.name[0]",
-                        Matchers.equalTo("City with name BEIJING already exists")));
+                        Matchers.equalTo("Provided city name is already in use")));
     }
 
     @Test
@@ -141,7 +140,7 @@ class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("");
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -159,7 +158,7 @@ class CityCtrlTest extends AbstractCtrlTest {
         CityRequest request = new CityRequest();
         request.setName("123456789012345678901234567890123456789012345678901");
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)

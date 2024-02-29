@@ -1,21 +1,20 @@
 package com.cairone.pg.rest.ctrl;
 
-import java.net.URI;
-
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.mapper.BankAccountFilter;
 import com.cairone.pg.core.mapper.BankAccountMapperCfg;
+import com.cairone.pg.core.model.BankAccountModel;
 import com.cairone.pg.core.service.BankAccountService;
 import com.cairone.pg.rest.ctrl.request.BankAccountRequest;
 import com.cairone.pg.rest.endpoints.BankAccountEndpoints;
-import com.cairone.pg.rest.exception.ResourceNotFoundException;
-import com.cairone.pg.core.model.BankAccountModel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import lombok.RequiredArgsConstructor;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +26,9 @@ public class BankAccountCtrl implements BankAccountEndpoints {
     public ResponseEntity<BankAccountModel> findById(Long id, BankAccountMapperCfg mapperCfg) {
         return bankAccountService.findById(id, mapperCfg)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Resource with ID %s was not found", id));
     }
 

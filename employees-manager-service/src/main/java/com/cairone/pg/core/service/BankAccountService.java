@@ -1,11 +1,10 @@
 package com.cairone.pg.core.service;
 
-import com.cairone.pg.core.exception.EntityIntegrityException;
-import com.cairone.pg.core.mapper.BankAccountFilter;
-import com.cairone.pg.core.mapper.BankAccountMapperCfg;
-import com.cairone.pg.core.exception.EntityNotFoundException;
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.form.BankAccountForm;
+import com.cairone.pg.core.mapper.BankAccountFilter;
 import com.cairone.pg.core.mapper.BankAccountMapper;
+import com.cairone.pg.core.mapper.BankAccountMapperCfg;
 import com.cairone.pg.core.model.BankAccountModel;
 import com.cairone.pg.data.dao.BankAccountRepository;
 import com.cairone.pg.data.dao.BankRepository;
@@ -76,8 +75,9 @@ public class BankAccountService {
     public BankAccountModel create(BankAccountForm form) {
 
         BankEntity bankEntity = bankRepository.findById(form.getBankId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource could not be created",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("bankId", "Invalid Bank ID provided"),
                         "Bank with ID %s does not exist in our database", form.getBankId()));
 
         // check business rules
@@ -96,8 +96,9 @@ public class BankAccountService {
     public BankAccountModel update(Long id, BankAccountForm form) {
 
         BankAccountEntity bankAccountEntity = bankAccountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be updated does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("bankAccountId", "Invalid Bank Account ID provided"),
                         "Bank account with ID %s could not be updated", id));
 
         // check business rules
@@ -110,9 +111,10 @@ public class BankAccountService {
         if (!bankAccountEntity.getBank().getId().equals(form.getBankId())) {
 
             BankEntity bankEntity = bankRepository.findById(form.getBankId())
-                  .orElseThrow(() -> new EntityNotFoundException(
-                            "Requested resource could not be updated",
-                            "Bank with ID %s does not exist in our database", form.getBankId()));
+                  .orElseThrow(() -> new AppClientException(
+                          AppClientException.NOT_FOUND,
+                          error -> error.put("bankId", "Invalid Bank ID provided"),
+                          "Bank with ID %s does not exist in our database", form.getBankId()));
 
             bankAccountEntity.setBank(bankEntity);
         }
@@ -123,8 +125,9 @@ public class BankAccountService {
     public void delete(Long id) {
 
         BankAccountEntity bankAccountEntity = bankAccountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be deleted does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("bankAccountId", "Invalid Bank Account ID provided"),
                         "Bank account with ID %s could not be deleted", id));
 
         bankAccountRepository.delete(bankAccountEntity);
@@ -133,7 +136,11 @@ public class BankAccountService {
     private void verifyDuplicatedName(String bankAccountNumber, Function<QBankAccountEntity, BooleanExpression> predicate) {
         boolean existsByName = exists(predicate);
         if (existsByName) {
-            throw new EntityIntegrityException("name", "Bank account number %s already exists", bankAccountNumber);
+            throw new AppClientException(
+                    AppClientException.DATA_INTEGRITY,
+                    error -> error.put("accountNumber", "Provided account number is already in use"),
+                    "Bank account number %s already exists",
+                    bankAccountNumber);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.cairone.pg.core.service;
 
-import com.cairone.pg.core.exception.EntityIntegrityException;
-import com.cairone.pg.core.exception.EntityNotFoundException;
+import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.form.DepartmentForm;
 import com.cairone.pg.core.mapper.DepartmentMapper;
 import com.cairone.pg.core.mapper.DepartmentMapperCfg;
@@ -52,15 +51,17 @@ public class DepartmentService {
         verifyDuplicatedName(name, q -> q.name.eq(form.getName()));
 
         final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Department could not be created",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("employeeId", "Invalid Manager ID provided"),
                         "Assigned manager with ID %s could not be found in the database",
                         form.getManagerId()));
 
         final Set<EmployeeEntity> employees = form.getEmployeeIDs().stream()
                 .map(employeeId -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Department could not be created",
+                        .orElseThrow(() -> new AppClientException(
+                                AppClientException.NOT_FOUND,
+                                error -> error.put("employeeId", "Invalid Employee ID provided"),
                                 "Assigned employee with ID %s could not be found in the database",
                                 employeeId)))
                 .collect(Collectors.toSet());
@@ -77,8 +78,9 @@ public class DepartmentService {
     public DepartmentModel update(Long id, DepartmentForm form) {
 
         DepartmentEntity departmentEntity = departmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be updated does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("departmentId", "Invalid Department ID provided"),
                         "Department with ID %s could not be updated", id));
 
         // check business rules
@@ -89,8 +91,9 @@ public class DepartmentService {
 
         if (!departmentEntity.getManager().getId().equals(form.getManagerId())) {
             final EmployeeEntity manager = employeeRepository.findById(form.getManagerId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Department could not be updated",
+                    .orElseThrow(() -> new AppClientException(
+                            AppClientException.NOT_FOUND,
+                            error -> error.put("employeeId", "Invalid Manager ID provided"),
                             "Assigned manager with ID %s could not be found in the database",
                             form.getManagerId()));
             departmentEntity.setManager(manager);
@@ -107,8 +110,9 @@ public class DepartmentService {
         final Set<EmployeeEntity> toBeAdded = form.getEmployeeIDs().stream()
                 .filter(e -> !intersection.contains(e))
                 .map(employeeId -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Department could not be updated",
+                        .orElseThrow(() -> new AppClientException(
+                                AppClientException.NOT_FOUND,
+                                error -> error.put("employeeId", "Invalid Employee ID provided"),
                                 "Assigned employee with ID %s could not be found in the database",
                                 employeeId)))
                 .collect(Collectors.toSet());
@@ -116,8 +120,9 @@ public class DepartmentService {
         final Set<EmployeeEntity> toBeRemoved = actualEmployeeIds.stream()
                 .filter(e -> !intersection.contains(e))
                 .map(employeeId -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Department could not be updated",
+                        .orElseThrow(() -> new AppClientException(
+                                AppClientException.NOT_FOUND,
+                                error -> error.put("employeeId", "Invalid Employee ID provided"),
                                 "Assigned employee with ID %s could not be found in the database",
                                 employeeId)))
                 .collect(Collectors.toSet());
@@ -131,8 +136,8 @@ public class DepartmentService {
     @Transactional
     public void delete(Long id) {
         DepartmentEntity departmentEntity = departmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be deleted does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
                         "Department with ID %s could not be deleted", id));
         departmentRepository.delete(departmentEntity);
     }
@@ -140,7 +145,10 @@ public class DepartmentService {
     private void verifyDuplicatedName(String name, Function<QDepartmentEntity, BooleanExpression> predicate) {
         boolean existsByName = exists(predicate);
         if (existsByName) {
-            throw new EntityIntegrityException("name", "Department with name %s already exists", name);
+            throw new AppClientException(
+                    AppClientException.DATA_INTEGRITY,
+                    error -> error.put("name", "Provided department name is already in use"),
+                    "Department with name %s already exists", name);
         }
     }
 

@@ -51,6 +51,6 @@ class EmployeeRepositoryTest {
         Assertions.assertThat(employeeEntity.getTags()).hasSize(2);
         
         Assertions.assertThat(employeeEntity.getTags()).contains(EmployeeTag.BACKEND_DEV);
-        Assertions.assertThat(employeeEntity.getTags()).contains(EmployeeTag.JAVA_DEV);
+        Assertions.assertThat(employeeEntity.getTags()).contains(EmployeeTag.DEVOPS);
     }
 }

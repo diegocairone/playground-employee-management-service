@@ -14,7 +14,6 @@ import com.cairone.pg.data.domain.EmployeeEntity;
 import com.cairone.pg.base.enums.EmployeeStatus;
 import com.cairone.pg.base.enums.EmployeeTag;
 import com.cairone.pg.rest.ctrl.request.EmployeeRequest;
-import com.cairone.pg.rest.valid.AppControllerAdvice;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -131,7 +130,7 @@ class EmployeeCtrlTest extends AbstractCtrlTest {
         request.setBirthDate(LocalDate.of(2000, 1, 1));
         request.setCityId(1L);
         request.setBankAccountId(4L);
-        request.setTags(Stream.of(EmployeeTag.FULLSTACK_DEV, EmployeeTag.JAVA_DEV).collect(Collectors.toSet()));
+        request.setTags(Stream.of(EmployeeTag.FULLSTACK_DEV, EmployeeTag.PRODUCT_MANAGER).collect(Collectors.toSet()));
 
         MockMvc mvc = standaloneSetup().build();
 
@@ -151,7 +150,7 @@ class EmployeeCtrlTest extends AbstractCtrlTest {
         expected.setNames("TEST");
         expected.setBirthDate(LocalDate.of(2000, 1, 1));
         expected.setCity(cityExpected);
-        expected.setTags(Stream.of(EmployeeTag.FULLSTACK_DEV, EmployeeTag.JAVA_DEV).collect(Collectors.toSet()));
+        expected.setTags(Stream.of(EmployeeTag.FULLSTACK_DEV, EmployeeTag.PRODUCT_MANAGER).collect(Collectors.toSet()));
         expected.setStatus(EmployeeStatus.INACTIVE);
         expected.setBankAccount(bankAccountEntityExpected);
         expected.setDepartments(null);
@@ -169,9 +168,9 @@ class EmployeeCtrlTest extends AbstractCtrlTest {
         request.setBirthDate(LocalDate.of(2000, 1, 1));
         request.setCityId(1L);
         request.setBankAccountId(4L);
-        request.setTags(Stream.of(EmployeeTag.FULLSTACK_DEV, EmployeeTag.JAVA_DEV).collect(Collectors.toSet()));
+        request.setTags(Stream.of(EmployeeTag.FULLSTACK_DEV, EmployeeTag.PRODUCT_MANAGER).collect(Collectors.toSet()));
 
-        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppControllerAdvice()).build();
+        MockMvc mvc = standaloneSetup().setControllerAdvice(new AppAdviceCtrl()).build();
 
         mvc.perform(MockMvcRequestBuilders.post(baseUri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -249,7 +248,6 @@ class EmployeeCtrlTest extends AbstractCtrlTest {
                 employeeStatusLogRepository,
                 cityRepository,
                 bankAccountRepository,
-                departmentRepository,
                 employeeMapper,
                 employeePageableConverter);
 

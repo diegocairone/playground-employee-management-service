@@ -1,13 +1,12 @@
 package com.cairone.pg.core.service;
 
-import com.cairone.pg.core.exception.EntityIntegrityException;
-import com.cairone.pg.core.exception.EntityNotFoundException;
+import com.cairone.pg.base.exception.AppClientException;
+import com.cairone.pg.core.form.BankForm;
 import com.cairone.pg.core.mapper.BankMapper;
 import com.cairone.pg.core.model.BankModel;
 import com.cairone.pg.data.dao.BankRepository;
 import com.cairone.pg.data.domain.BankEntity;
 import com.cairone.pg.data.domain.QBankEntity;
-import com.cairone.pg.core.form.BankForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,8 +53,9 @@ public class BankService {
     public BankModel update(Long id, BankForm form) {
 
         BankEntity bankEntity = bankRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be updated does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Bank with ID %s could not be updated", id));
 
         // check business rules
@@ -69,8 +69,9 @@ public class BankService {
     @Transactional
     public void delete(Long id) {
         BankEntity bankEntity = bankRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Requested resource to be deleted does not exist in the database",
+                .orElseThrow(() -> new AppClientException(
+                        AppClientException.NOT_FOUND,
+                        error -> error.put("id", "Invalid ID provided"),
                         "Bank with ID %s could not be deleted", id));
         bankRepository.delete(bankEntity);
     }
@@ -78,7 +79,10 @@ public class BankService {
     private void verifyDuplicatedName(String name, Function<QBankEntity, BooleanExpression> predicate) {
         boolean existsByName = exists(predicate);
         if (existsByName) {
-            throw new EntityIntegrityException("name", "Bank with name %s already exists", name);
+            throw new AppClientException(
+                    AppClientException.DATA_INTEGRITY,
+                    error -> error.put("name", "Provided bank name is already in use"),
+                    "Bank with name %s already exists", name);
         }
     }
 

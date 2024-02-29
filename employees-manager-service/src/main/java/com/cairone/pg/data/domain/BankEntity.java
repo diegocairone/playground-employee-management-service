@@ -9,7 +9,7 @@ public class BankEntity {
 
     @Id
     @Column(name = "bank_id")
-    @SequenceGenerator(name = "bank-seq-generator", sequenceName = "bank_seq", allocationSize = 10, initialValue = 20)
+    @SequenceGenerator(name = "bank-seq-generator", sequenceName = "bank_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bank-seq-generator")
     private Long id;
     

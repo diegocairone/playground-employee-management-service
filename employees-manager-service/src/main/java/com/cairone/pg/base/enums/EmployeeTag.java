@@ -4,8 +4,11 @@ public enum EmployeeTag {
     BACKEND_DEV(1),
     FRONTEND_DEV(2),
     FULLSTACK_DEV(3),
-    JAVA_DEV(4),
-    REACT_DEV(5);
+    DEVOPS(4),
+    QA(5),
+    PRODUCT_MANAGER(6),
+    PROJECT_MANAGER(7),
+    SCRUM_MASTER(8);
 
     int dbValue;
     
@@ -26,9 +29,15 @@ public enum EmployeeTag {
         case 3:
             return FULLSTACK_DEV;
         case 4:
-            return JAVA_DEV;
+            return DEVOPS;
         case 5:
-            return REACT_DEV;
+            return QA;
+        case 6:
+            return PRODUCT_MANAGER;
+        case 7:
+            return PROJECT_MANAGER;
+        case 8:
+            return SCRUM_MASTER;
         default:
             throw new RuntimeException("Unknown dbValue: " + dbValue);
         }
