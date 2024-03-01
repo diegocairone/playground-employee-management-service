@@ -2,10 +2,9 @@ package com.cairone.pg.rest.endpoints;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import com.cairone.pg.rest.ctrl.request.BankRequest;
 import com.cairone.pg.core.model.BankModel;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

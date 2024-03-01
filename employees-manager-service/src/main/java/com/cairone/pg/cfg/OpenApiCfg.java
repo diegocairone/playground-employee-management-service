@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class Swagger2Cfg {
+public class OpenApiCfg {
 
     private final AppScopes appScopes;
 

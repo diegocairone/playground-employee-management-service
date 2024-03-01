@@ -1,9 +1,9 @@
 package com.cairone.pg.data.converter;
 
 import com.cairone.pg.base.enums.BankAccountType;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 @Converter(autoApply = true)
 public class BankAccountTypeConverter implements AttributeConverter<BankAccountType, Integer> {
