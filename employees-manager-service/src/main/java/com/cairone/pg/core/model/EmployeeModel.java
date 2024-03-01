@@ -1,10 +1,12 @@
 package com.cairone.pg.core.model;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-
+import com.cairone.pg.base.enums.EmployeeTag;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Set;
 
 @JsonInclude(Include.NON_NULL)
 public class EmployeeModel {
@@ -14,14 +16,16 @@ public class EmployeeModel {
     private final LocalDate birthDate;
     private final Long yearsOld;
     private final CityModel city;
+    private final Set<EmployeeTag> tags;
     
-    private EmployeeModel(Long id, String names, LocalDate birthDate, CityModel city) {
+    private EmployeeModel(Long id, String names, LocalDate birthDate, CityModel city, Set<EmployeeTag> tags) {
         super();
         this.id = id;
         this.names = names;
         this.birthDate = birthDate;
         this.yearsOld = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
         this.city = city;
+        this.tags = tags;
     }
 
     public Long getId() {
@@ -44,6 +48,10 @@ public class EmployeeModel {
         return city;
     }
 
+    public Set<EmployeeTag> getTags() {
+        return tags;
+    }
+
     @Override
     public String toString() {
         return "EmployeeModel [id=" + id + ", names=" + names + "]";
@@ -55,6 +63,7 @@ public class EmployeeModel {
         private String names;
         private LocalDate birthDate;
         private CityModel city;
+        private Set<EmployeeTag> tags;
         
         private EmployeeModelBuilder() {
         }
@@ -82,9 +91,14 @@ public class EmployeeModel {
             this.city = city;
             return this;
         }
+
+        public EmployeeModelBuilder setTags(Set<EmployeeTag> tags) {
+            this.tags = tags;
+            return this;
+        }
         
         public EmployeeModel build() {
-            return new EmployeeModel(id, names, birthDate, city);
+            return new EmployeeModel(id, names, birthDate, city, tags);
         }
     }
 }

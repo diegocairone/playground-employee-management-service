@@ -6,4 +6,5 @@ import lombok.Data;
 public class EmployeeMapperCfg {
 
     private Boolean includeCity;
+    private Boolean includeTags;
 }
