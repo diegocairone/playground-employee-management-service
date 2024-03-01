@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class EmployeePageableConverter implements Converter<Pageable, Pageable> {
@@ -23,7 +22,7 @@ public class EmployeePageableConverter implements Converter<Pageable, Pageable> 
                         return viewOrder;
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         Sort sort = Sort.by(orders);
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);

@@ -1,5 +1,6 @@
 package com.cairone.pg.rest.ctrl;
 
+import com.cairone.pg.base.enums.EmployeeTag;
 import com.cairone.pg.base.exception.AppClientException;
 import com.cairone.pg.core.mapper.EmployeeFilter;
 import com.cairone.pg.core.mapper.EmployeeMapperCfg;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -82,5 +85,10 @@ public class EmployeeCtrl implements EmployeeEndpoints {
     public ResponseEntity<Void> updateStatus(Long id, EmployeeStatusRequest request) {
         employeeService.updateStatus(id, request.getNewStatus());
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeTag>> getAllEmployeeTag() {
+        return ResponseEntity.ok(Arrays.asList(EmployeeTag.values()));
     }
 }

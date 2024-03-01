@@ -14,6 +14,7 @@ import com.cairone.pg.data.dao.EmployeeRepository;
 import com.cairone.pg.data.dao.EmployeeStatusLogRepository;
 import com.cairone.pg.data.domain.*;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,13 +45,26 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<EmployeeModel> findByGlobalId(UUID globalId, EmployeeMapperCfg mapperCfg) {
+        QEmployeeEntity query = QEmployeeEntity.employeeEntity;
+        Predicate predicate = query.globalId.eq(globalId);
+        return employeeRepository.findOne(predicate)
+                .map(entity -> employeeMapper.convert(entity, mapperCfg));
+    }
+
+    @Transactional(readOnly = true)
     public Page<EmployeeModel> findAll(EmployeeFilter filter, EmployeeMapperCfg mapperCfg, Pageable viewPageable) {
 
         QEmployeeEntity query = QEmployeeEntity.employeeEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (filter != null && filter.getStartsWith() != null && !filter.getStartsWith().isBlank()) {
-            builder.and(query.names.startsWithIgnoreCase(filter.getStartsWith()));
+        if (filter != null) {
+            if (filter.getStartsWith() != null && !filter.getStartsWith().isBlank()) {
+                builder.and(query.names.startsWithIgnoreCase(filter.getStartsWith()));
+            }
+            if (filter.getHasGlobalId() != null) {
+                builder.and(query.globalId.eq(filter.getHasGlobalId()));
+            }
         }
 
         Pageable dataPageable = employeePageableConverter.convert(viewPageable);
@@ -70,6 +85,7 @@ public class EmployeeService {
                         form.getCityId()));
 
         EmployeeEntity employeeEntity = new EmployeeEntity();
+        employeeEntity.setGlobalId(UUID.randomUUID());
         employeeEntity.setNames(form.getNames().trim().toUpperCase());
         employeeEntity.setBirthDate(form.getBirthDate());
         employeeEntity.setCity(cityEntity);

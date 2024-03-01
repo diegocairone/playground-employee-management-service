@@ -64,8 +64,8 @@ public class AppAdviceCtrl {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorValue> handleDataIntegrityViolationExceptions(DataIntegrityViolationException ex) {
 
-        if (ex.getCause() instanceof ConstraintViolationException) {
-            return handleConstraintViolationException((ConstraintViolationException) ex.getCause());
+        if (ex.getCause() instanceof ConstraintViolationException constraintViolationException) {
+            return handleConstraintViolationException(constraintViolationException);
         }
 
         ErrorValue appErrorResponse = ErrorValue.builder()
@@ -86,8 +86,7 @@ public class AppAdviceCtrl {
                 .withReason("One or more fields could not be read correctly")
                 .build();
 
-        if (ex.getCause() instanceof InvalidFormatException) {
-            InvalidFormatException invalidFormatException = ((InvalidFormatException) ex.getCause());
+        if (ex.getCause() instanceof InvalidFormatException invalidFormatException) {
             appErrorResponse.addError(
                     invalidFormatException.getPath().get(0).getFieldName(),
                     "Invalid value provided");

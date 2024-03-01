@@ -40,7 +40,7 @@ public class DepartmentService {
         return departmentRepository.findAll()
                 .stream()
                 .map(entity -> departmentMapper.convert(entity, mapperCfg))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

@@ -1,31 +1,42 @@
 package com.cairone.pg.core.model;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-
+import com.cairone.pg.base.enums.EmployeeTag;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Set;
+import java.util.UUID;
 
 @JsonInclude(Include.NON_NULL)
 public class EmployeeModel {
 
     private final Long id;
+    private UUID globalId;
     private final String names;
     private final LocalDate birthDate;
     private final Long yearsOld;
     private final CityModel city;
+    private final Set<EmployeeTag> tags;
     
-    private EmployeeModel(Long id, String names, LocalDate birthDate, CityModel city) {
+    private EmployeeModel(Long id, UUID globalId, String names, LocalDate birthDate, CityModel city, Set<EmployeeTag> tags) {
         super();
         this.id = id;
+        this.globalId = globalId;
         this.names = names;
         this.birthDate = birthDate;
         this.yearsOld = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
         this.city = city;
+        this.tags = tags;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public UUID getGlobalId() {
+        return globalId;
     }
 
     public String getNames() {
@@ -44,6 +55,10 @@ public class EmployeeModel {
         return city;
     }
 
+    public Set<EmployeeTag> getTags() {
+        return tags;
+    }
+
     @Override
     public String toString() {
         return "EmployeeModel [id=" + id + ", names=" + names + "]";
@@ -52,9 +67,11 @@ public class EmployeeModel {
     public static class EmployeeModelBuilder {
 
         private Long id;
+        private UUID globalId;
         private String names;
         private LocalDate birthDate;
         private CityModel city;
+        private Set<EmployeeTag> tags;
         
         private EmployeeModelBuilder() {
         }
@@ -65,6 +82,11 @@ public class EmployeeModel {
 
         public EmployeeModelBuilder setId(Long id) {
             this.id = id;
+            return this;
+        }
+
+        public EmployeeModelBuilder setGlobalId(UUID globalId) {
+            this.globalId = globalId;
             return this;
         }
 
@@ -82,9 +104,14 @@ public class EmployeeModel {
             this.city = city;
             return this;
         }
+
+        public EmployeeModelBuilder setTags(Set<EmployeeTag> tags) {
+            this.tags = tags;
+            return this;
+        }
         
         public EmployeeModel build() {
-            return new EmployeeModel(id, names, birthDate, city);
+            return new EmployeeModel(id, globalId, names, birthDate, city, tags);
         }
     }
 }
