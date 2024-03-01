@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class BankService {
         return bankRepository.findAll()
                 .stream()
                 .map(bankMapper::convert)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
