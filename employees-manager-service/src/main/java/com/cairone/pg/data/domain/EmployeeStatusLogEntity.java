@@ -3,7 +3,13 @@ package com.cairone.pg.data.domain;
 import com.cairone.pg.data.domain.id.EmployeeStatusLogPkEntity;
 import com.cairone.pg.base.enums.EmployeeStatus;
 
-import javax.persistence.*;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
 import java.time.LocalDateTime;
 
 @Entity

@@ -4,7 +4,20 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
 
 import com.cairone.pg.base.enums.EmployeeStatus;
 import com.cairone.pg.base.enums.EmployeeTag;
@@ -33,7 +46,7 @@ public class EmployeeEntity {
     private EmployeeStatus status;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bank_account_id", referencedColumnName = "account_id", nullable = true, unique = true)
+    @JoinColumn(name = "bank_account_id", referencedColumnName = "account_id", unique = true)
     private BankAccountEntity bankAccount;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "employees")

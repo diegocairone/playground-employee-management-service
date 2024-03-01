@@ -1,12 +1,10 @@
 package com.cairone.pg.rest.ctrl.request;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import com.cairone.pg.core.form.BankAccountForm;
 import com.cairone.pg.base.enums.BankAccountType;
-
+import com.cairone.pg.core.form.BankAccountForm;
 import com.cairone.pg.rest.ctrl.constraint.BankAccountNumberForTypeConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data

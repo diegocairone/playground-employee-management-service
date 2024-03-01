@@ -4,9 +4,9 @@ import com.cairone.pg.core.form.EmployeeForm;
 import com.cairone.pg.base.enums.EmployeeTag;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Set;
 

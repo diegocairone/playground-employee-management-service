@@ -2,9 +2,20 @@ package com.cairone.pg.data.domain;
 
 import com.cairone.pg.base.enums.BankAccountType;
 
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GenerationType;
+
 import java.util.Objects;
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "banks_accounts")
@@ -26,7 +37,7 @@ public class BankAccountEntity {
     @JoinColumn(name = "bank_id", referencedColumnName = "bank_id", nullable = false)
     private BankEntity bank;
 
-    @OneToOne(optional = true, mappedBy = "bankAccount")
+    @OneToOne(mappedBy = "bankAccount")
     private EmployeeEntity employee;
 
     public Long getId() {

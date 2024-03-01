@@ -1,9 +1,9 @@
 package com.cairone.pg.data.converter;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 import com.cairone.pg.base.enums.EmployeeStatus;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class EmployeeStatusConverter implements AttributeConverter<EmployeeStatus, Integer> {

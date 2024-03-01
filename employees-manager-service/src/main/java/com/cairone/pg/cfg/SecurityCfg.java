@@ -1,45 +1,32 @@
 package com.cairone.pg.cfg;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityCfg extends WebSecurityConfigurerAdapter {
+public class SecurityCfg extends SecurityAbstractCfg {
 
-    @Value("${app.jwt.claim.username:sub}")
-    private String usernameClaim;
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf(e -> e.disable())
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+        return http.csrf(conf -> conf.disable())
                 .sessionManagement(e -> e.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(j -> j.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
-                            .permitAll()
-                        .anyRequest()
-                            .authenticated());
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(
+                        j -> j.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .build();
     }
 
-    private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
-        return jwt ->
-            new JwtAuthenticationToken(
-                    jwt,
-                    jwtConverter.convert(jwt),
-                    jwt.getClaim(usernameClaim));
-    }
-
-    private final KeycloakJwtGrantedAuthoritiesConverter jwtConverter = new KeycloakJwtGrantedAuthoritiesConverter();
 }

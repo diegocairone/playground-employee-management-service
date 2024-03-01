@@ -3,9 +3,8 @@ package com.cairone.pg.rest.ctrl.validator;
 import com.cairone.pg.base.enums.BankAccountType;
 import com.cairone.pg.rest.ctrl.constraint.BankAccountNumberForTypeConstraint;
 import com.cairone.pg.rest.ctrl.request.BankAccountRequest;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class BankAccountNumberForTypeValidator implements ConstraintValidator<BankAccountNumberForTypeConstraint, BankAccountRequest> {
 

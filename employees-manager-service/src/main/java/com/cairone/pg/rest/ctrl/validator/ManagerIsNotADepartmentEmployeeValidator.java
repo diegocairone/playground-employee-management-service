@@ -2,9 +2,8 @@ package com.cairone.pg.rest.ctrl.validator;
 
 import com.cairone.pg.rest.ctrl.constraint.ManagerIsNotADepartmentEmployeeConstraint;
 import com.cairone.pg.rest.ctrl.request.DepartmentRequest;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ManagerIsNotADepartmentEmployeeValidator implements ConstraintValidator<ManagerIsNotADepartmentEmployeeConstraint, DepartmentRequest> {
     @Override
