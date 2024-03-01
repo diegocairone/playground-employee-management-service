@@ -64,11 +64,12 @@ ALTER TABLE IF EXISTS employees_manager.cities
 CREATE TABLE IF NOT EXISTS employees_manager.employees
 (
     employee_id integer NOT NULL,
+    global_id uuid NOT NULL UNIQUE,
     names character varying(50) COLLATE pg_catalog."default" NOT NULL,
     birthdate date NOT NULL,
     city_id integer NOT NULL,
     status integer NOT NULL,
-    bank_account_id integer,
+    bank_account_id integer NOT NULL,
     CONSTRAINT employees_pkey PRIMARY KEY (employee_id),
     CONSTRAINT employees_bank_account_id_fkey FOREIGN KEY (bank_account_id)
         REFERENCES employees_manager.banks_accounts (account_id) MATCH SIMPLE

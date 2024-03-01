@@ -19,6 +19,7 @@ public class EmployeeMapper implements Converter<EmployeeEntity, EmployeeModel> 
         CityModel city = cityMapper.convert(source.getCity());
         return EmployeeModelBuilder.builder()
                 .setId(source.getId())
+                .setGlobalId(source.getGlobalId())
                 .setNames(source.getNames())
                 .setBirthDate(source.getBirthDate())
                 .setCity(city)
@@ -37,6 +38,7 @@ public class EmployeeMapper implements Converter<EmployeeEntity, EmployeeModel> 
             }
         }
         builder.setId(source.getId())
+                .setGlobalId(source.getGlobalId())
                 .setNames(source.getNames())
                 .setBirthDate(source.getBirthDate());        
         return builder.build();

@@ -3,6 +3,7 @@ package com.cairone.pg.data.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
@@ -32,6 +33,9 @@ public class EmployeeEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee-seq-generator")
     private Long id;
 
+    @Column(name = "global_id", nullable = false, unique = true)
+    private UUID globalId;
+
     @Column(name = "names", nullable = false, length = 50)
     private String names;
     
@@ -46,7 +50,7 @@ public class EmployeeEntity {
     private EmployeeStatus status;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bank_account_id", referencedColumnName = "account_id", unique = true)
+    @JoinColumn(name = "bank_account_id", referencedColumnName = "account_id", unique = true, nullable = false)
     private BankAccountEntity bankAccount;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "employees")
@@ -64,6 +68,14 @@ public class EmployeeEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getGlobalId() {
+        return globalId;
+    }
+
+    public void setGlobalId(UUID globalId) {
+        this.globalId = globalId;
     }
 
     public String getNames() {
