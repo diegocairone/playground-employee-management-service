@@ -1,0 +1,7 @@
+rename dao package to repository
+create a new dao package and add wrappers for repositories
+use dao wrappers in services
+
+---
+
+there is typo in the project name
