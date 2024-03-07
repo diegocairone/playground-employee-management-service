@@ -32,9 +32,9 @@ public class OpenApiCfg {
                         new SecurityRequirement().addList("http"),
                         new SecurityRequirement().addList("oauth")))
                 .info(new Info()
-                        .title("Employees Manager service")
+                        .title("Employee Management service")
                         .description(
-                                "The Employees Manager service is a Spring Boot-based RESTful API developed for " +
+                                "The Employee Management service is a Spring Boot-based RESTful API developed for " +
                                         "educational purposes. This application serves as a demonstration of how to create a " +
                                         "simple system for managing employee information using the Spring Boot framework")
                 );
